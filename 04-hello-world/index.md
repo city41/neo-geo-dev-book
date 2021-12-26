@@ -1,78 +1,394 @@
 # Hello World
 
-Finally in chapter four we begin actually coding. We are going to start small, with our only goal being to show "HELLO NEO GEO" on the screen.
-
-If you remember from chapter 2, a Neo Geo game has many different types of ROMs. All of these ROMs must be present in order for a game to work, which imposes a significant burden on getting started. To make matters worse, the Neo Geo has no built in way to display text! To overcome these obstacles and get up and running more quickly, we won't be starting from scratch. Instead we will use an existing game as our basis, and swap in our own P ROM.
+Finally in chapter four we begin actually coding. We are going to start small, with our only goal being to write a message to the screen.
 
 ## What we will be building
 
 Saying "Hello world" is the classic way to start out any programming endeavour. So to kick off Neo Geo programming, we will write a program that displays "Hello Neo Geo!" on the screen
 
-<< screenshot of running app >>
+![screenshot of Hello Neo Geo program](./screenshotOfHelloNeoGeo.png)
 
-## Download the sample game ROMs
+The full program can be found on GitHub at this book's game repo
 
-You can download a zip file of the sample game here
+https://github.com/city41/ngbook-game/tree/04-hello-world
 
-<< repo of the sample game, releases >>
-
-You can try out the game in gngeo with `gngeo snake.zip`. It is the simple snake game popular on mobile phones in the early 2000s. It is actually the game we will build in this book.
+Each chapter in the book will get its own branch.
 
 ## Set up your project directory
 
 Create a directory named `helloNeo` and set up its contents like this
 
 ```
-sampleRom/
-  202-c1.c1
-  202-c2.c2
-  ...
+resources/
 src/
+configure.ac
+Makefile.common
+Makefile.config.in
 ```
 
-The contents of the `sampleRom` folder is the contents of the sample rom zip file.
+`resources` and `src` are just empty directories to start, `configure.ac`, `Makefile.common`,  and `Makefile.config.in` you can copy in from the [ngdevkit-examples project](https://github.com/dciabrin/ngdevkit-examples/)
+
+From this directory in a terminal, run the `autoreconf` command. This will take the `configure.ac` file and create a `configure` script. Once the script is created, run it with `./configure`. `configure` will look at the `Makefile.config.in` file and create a `Makefile.config` file from it based on how ngdevkit is installed on your system.
 
 ## Create the Makefile
 
-We need a Makefile to drive building and testing the game. Thankfully for this simple app the Makefile is also quite simple. Create a file in the root of your project directory named `Makefile` with these contents:
+We need a primary Makefile to drive building and running the game. We lean on ngdevkit to help us here. Create a file named `Makefile` in the `src` directory with this as its contents:
+
+```Makefile
+all: cart nullbios
+
+include ../Makefile.config
+
+# ROM names and common targets
+include ../Makefile.common
+
+$(CART): $(PROM) $(CROM1) $(CROM2) $(SROM) $(VROM) $(MROM) | rom
+
+OBJS=main
+ELF=rom.elf
+
+$(ELF):	$(OBJS:%=%.o)
+	$(M68KGCC) -o $@ $^ `pkg-config --libs ngdevkit`
+
+%.o: %.c
+	$(M68KGCC) `pkg-config --cflags ngdevkit` -std=c99 -fomit-frame-pointer -g -c $< -o $@
+
+
+# sound driver ROM: ngdevkit's nullsound
+$(MROM): | rom
+	$(Z80SDOBJCOPY) -I ihex -O binary $(NULLSOUNDDIR)/nullsound.ihx $@ --pad-to 131072
+
+# sample ROM: empty
+$(VROM): | rom
+	dd if=/dev/zero bs=1024 count=512 of=$@
+
+# sprite ROM C1 C2: empty
+$(CROM1): rom
+	dd if=/dev/zero bs=1024 count=512 of=$@
+
+$(CROM2): rom
+	dd if=/dev/zero bs=1024 count=512 of=$@
+
+# fixed tile ROM
+$(SROM) srom: rom
+	cd .. && sromcrom -i resources/resources.json
+
+# program ROM
+$(PROM): $(ELF) | rom
+	$(M68KOBJCOPY) -O binary -S -R .comment $< $@ && dd if=$@ of=$@ conv=notrunc,swab
+
+clean:
+	rm -f *.png *.o *~ $(ELF) tmp.* rom/*.*
+
+.PHONY: clean
 
 ```
-makefile goes here
+
+There is a lot going on in this file! Make has a very steep learning curve, so don't worry if this is all gibberish right now. We'll dive more into Make later.
+
+
+## Create the S ROM containing a font
+
+The Neo Geo has no built in way to display any kind of letters or numbers. The only thing it can do is show graphic tiles on the screen. Before our app can print out a message, we need to set up some of these tiles to serve as a font.
+
+We will be using the tool sromcrom to convert png files into tiles. First, in the `resources` directory, add a file named `resources.json` with this as its contents:
+
+```json
+{
+	"romPathRoot": "../src/rom/202-",
+	"sromImages": {
+		"inputs": [
+			{
+				"name": "font",
+				"imageFile": "./fixFont.png"
+			}
+		]
+	}
+}
 ```
 
-This makefile does three things:
+sromcrom will read this file and generate tile data accordingly. `romPathRoot` tells sromcrom where to write the ROM files and it is relative to the location of the resources.json file. Since we are generating an S ROM file, a single file will be written to `../src/rom/202-s1.s1`. If we were also generating C ROMs for sprites, then the files `../src/rom/202-c1.c1` and `../src/rom/202-c2.c2` would also be written. 
 
-1. Copies the ROMs from the sample game we will be "borrowing" to bootstrap our hello world app. Our hello world app will only need to create its own P1 ROM, so the rest of the ROMs get copied in from the sample game.
+The `sromImages` entry is where we tell sromcrom which image files to use to generate the tiles that will go into the S ROM file. We only have one this time, `fixFont.png`. Let's go ahead and create it. You can copy this image into your resources directory to serve as `fixFont.png`
 
-2. Creates the P ROM file by compiling the c source code and converting the resulting binary into the format the Neo Geo expects.
+![fix font](./fixFont.png)
 
-3. Sets up a gngeo task that allows us to easily launch our hello world app by simply typing `make gngeo`.
+As you can see it's just a small font, with each character being 8x8 pixels in size. The magenta color is how we specify the transparent color, there won't be any actual magenta in the running game.
 
-## The sample game's S ROM
+### run sromcrom and check the results
 
-As you may remember from chapter 2, the S ROM contains the tiles for the fix layer. Almost all Neo Geo games use some of the tiles in this ROM to serve as characters for displaying words and numbers on the screen. There is no requirement for this, of course, but it's very commonly done. The sample game is no different, and has character tiles starting at index 0 going up to index <<END INDEX>>
+We are now ready to have sromcrom generate our S ROM for us. We can do that by invoking `make srom` inside the `src` directory. This make command told make to find the `srom` target and invoke it. In our Makefile, this is that target:
 
-<< screenshot of the sample S rom in neospriteview >>
 
-You can check out the S ROM yourself by loading it into the sprite viewer at https://city41,github.io/neospriteviewer
+```Makefile
+# fixed tile ROM
+$(SROM) srom: rom
+	cd .. && sromcrom -i resources/resources.json
+```
+
+`$(SROM)` is a variable, if you look inside `Makefile.common`, you will find this line
+
+```Makefile
+SROM=rom/202-s1.s1
+```
+
+So whenever make needs to build the file `rom/202-s1.s1` (which is our S ROM file), it will invoke the command `cd .. && sromcrom -i resources/resources.json`. This is just kicking off sromcrom, and handing it our resources.json file. The `srom` after `$(SROM)` is another way to invoke this target, it lets us type `make srom` on the command line instead of `make rom/202-s1.s1`.
+
+You should see a little bit of output from sromcrom:
+
+```bash
+$ make srom
+mkdir rom
+cd .. && sromcrom -i resources/resources.json
+wrote /home/matt/dev/helloNeo/src/rom/202-s1.s1
+```
+
+And if you look inside `src/rom`, you should indeed find the s1 file. Head on over to https://city41.github.io/neospriteviewer and load this s1 file:
+
+![our S ROM file loaded into neospriteviewer](./sromInNeospriteviewer.png)
+
+Excellent! Our font has been converted into tiles and is ready to go.
+
 
 ### Translating ASCII to tiles
 
-In our C program, when we create a string such as `"Hello Neo Geo!`, it will encode those characters into ASCII
+In our C program, when we create a string such as `"Hello Neo Geo!"`, it will encode those characters into ASCII. ASCII is just a mapping from numbers to characters, for example capital `A` is 65 in ASCII.
 
-<< TODO: is it really UTF? >>
+![ASCII table](./ASCII-Table.svg)
 
-<< screenshot of ASCII table >>
+Source: Wikipedia, released to the public domain
 
-In ASCII, the letter 'A' is encoded as the value `65`. In the S ROM, 'A' is located at index 33. So when we encounter `'A'` in code, to find the corresponding tile, we need to subtract `32`. This is true of all ASCII characters, because the tiles in the S ROM are stored in the same order as ASCII. The beginning of the ASCII table is a bunch of stuff we don't need in a Neo Geo game. So the first tile is space. Since space's ASCII value is `32`, to find the corresponding tile from an ASCII value we need to subtract `32`.
+The first character in ASCII that we care about is space, which is number 32. If you compare the table to the fixFont.png image above, you'll see they match each other.
+
+Sromcrom's space tile is at index 33, just off by one from ASCII. So to display text on the Neo Geo using or S ROM file, we just need to take the ASCII code and add one to it to get the corresponding tile index. 
 
 ## How to set tiles on the fix layer
 
-Now that we have a rough idea of which tiles we need to place on the screen to spell out "Hello Neo Geo!", we need to know how to tell the Neo Geo to display them.
+We now know how to pick the tiles to display on the screen, but how do we actually display them? That is where the Neo Geo's Video RAM comes into play.
+
+You can think of the Neo Geo's graphics as being *declarative*. We simply tell the Neo Geo "place tile 34 at this location", and the hardware will do it for us. This is done by setting values in Video RAM.
+
+But we don't have direct access to the video RAM. Instead, the 68k's memory map has various registers that allow us to interact with video RAM.
+
+<div class="callout">
+<h3>What is a memory map?</h3>
+TODO
+</div>
+
+Here are the registers we will need to draw our tiles
+
+| Address  | Name         | Description                                                        |
+|----------|--------------|--------------------------------------------------------------------|
+| 0x3c0000 | REG_VRAMADDR | Sets the current video RAM address we want to either read or write | 
+| 0x3c0002 | REG_VRAMRW   | Read or write to the address that was set in REG_VRAMADDR          |
+| 0x3c0004 | REG_VRAMMOD  | After writing to REG_VRAMRW, REG_VRAMADDR will jump ahead by the amount specified in this regiser |
+
+And finally, we need the address of the fix map in video RAM, which is 0x7000. Thankfully, ngdevkit has named that address `ADDR_FIXMAP` so we don't have to remember it. The fix map is a chunk of memory storing which tiles are currently being drawn on the fix layer. It starts at the upper left corner and reads top to bottom, then left to right. The fix layer has a total size of 40 tiles wide by 32 tiles tall. But it is recommended to only place tiles in the central 38x28 portion of the layer as tiles on the edge can get cut off on some displays.
+
+### Placing a single tile in the fix layer
+
+Let's say we want to draw `@` in the fix layer at x=10 and y=14. Here is what we need to do:
+
+1. Determine `@` tile index, which is 65.
+2. Figure out how far into the fix map corresponds to the tile at (10,14)
+    * This is (x * 32) + y, which is 334
+3. Set `REG_VRAMADDR` to this value, in C this would be `*REG_VRAMADDR = ADDR_FIXMAP + 334;`
+4. Write `65` to `REG_VRAMRW`, ie `*REG_VRAMRW = 65;`
+
+This is a bit simplified because it is ignoring palettes, but we'll get there in due time.
+
+## Writing the Hello World app in C
+
+We are now finally ready to write some actual code. Create the file `src/main.c` and start it out with this:
+
+```C
+#include <ngdevkit/neogeo.h>
+
+int main() {
+}
+```
+
+We pull in the main ngdevkit header file so we can access it, you will do this in almost all source files in a Neo Geo game. We also declare `main`, which is the function that will get invoked when the system is ready to run our game.
+
+We need to:
+
+* initialize a palette
+* clear the fix layer, in case video RAM has garbage values in it
+* draw our message on the screen
+
+That will look something like this
+
+```C
+#include <ngdevkit/neogeo.h>
+
+int main() {
+	init_palette();
+	fix_clear();
+
+	fix_print(10, 14, "Hello Neo Geo!");
+}
+```
+
+None of these functions actually exist yet, we have to write them! Let's start with `init_palette`.
+
+### init_palette()
+
+Palettes are stored in regular RAM, not video RAM. Palettes start at address 0x400000, which ngdevkit has named `MMAP_PALBANK1`. To initialize a palette, we just need to write some colors to this address
+
+```C
+#define BLACK 0x8000
+#define WHITE 0x7FFF
+#define PALETTE_SIZE 2
+
+const u16 palette[PALETTE_SIZE] = { BLACK, WHITE };
+
+void init_palette() {
+    for (u8 i = 0; i < PALETTE_SIZE; ++i) {
+        MMAP_PALBANK1[i] = palette[i];
+    }
+}
+```
+
+Here we have defined a two color palette and a function which will write it into memory. Don't worry too much about why black is `0x8000` and white is `0x7FFF`, we'll talk about colors later.
+
+### fix_clear()
+
+Upon booting up the system, it is possible video RAM has garbage values in it. We want to b sure the fix layer is totally clear before we do anything, so our `fix_clear` function will clear it out.
+
+```C
+void fix_clear() {
+    u8 palette = 0;
+    u16 tileValue = (palette << 12) | 0xFF;
+
+    *REG_VRAMADDR = ADDR_FIXMAP;
+    *REG_VRAMMOD = 1;
+
+    for (u16 i = 0; i < 40 * 32; ++i) {
+        *REG_VRAMRW = tileValue;
+    }
+}
+```
+
+When telling the fix layer what tile to use, you need to give it both a tile index and a palette index. This is done by taking both values and combining them into one, by shifting the palette's index to the two four bits of the value
+
+<<< diagram showing the combined values >>>
+
+In our case we are using the palette at index 0, so we don't actually need to do this, as the top bits will default to zero.
+
+Then we set `REG_VRAMADDR` to the fix map's address. Remember, `REG_VRAMADDR` is the register that we use to tell the Neo Geo where in video RAM we want to read or write values.
+
+We then set `REG_VRAMMOD` to 1. This means every time we send a value to `REG_VRAMRW`, the system will then bump the address that `REG_VRAMADDR` is set to by one word (two bytes). This allows us to just keep sending values to `REG_VRAMRW` repeatedly and the system will keep incrementing the address for us.
+
+Finally the for loop takes this value, and writes it into video ram 1,280 times, which is 40 * 32, which is how many tiles across (40) and tall (32) the fix layer is.
+
+<div class="callout">
+<h3>Video RAM words</h3>
+<p>In video RAM, all writes are done in 16 bit words. You can never write a single byte to video RAM. Whenever you send a value, it will always be 16 bits. Also whenever you set REG_VRAMMOD to 1, it means "bump the address by one word".
+</div>
+
+But why are we setting the tile index to 0xFF? For reasons we'll get to later in the book, the tile at 0xFF in an S ROM needs to be blank. This is true in our S ROM too (you can see it in the screenshot of the tile viewer above). Since 0xFF is required to be blank, it is a good candidate for clearing out the fix layer.
+
+### fix_print()
+
+And finally we need to implement the function that sets our message into the fix layer
+
+```C
+void fix_print(u16 x, u16 y, const u8* text) {
+    *REG_VRAMADDR = ADDR_FIXMAP + (x * 32) + y;
+    *REG_VRAMMOD = 32;
+
+    u8 palette = 0;
+
+    while (*text) {
+        u16 tileIndex = *text + 1;
+        *REG_VRAMRW = (palette << 12) | tileIndex;
+
+        text += 1;
+    }
+}
+```
+
+First we tell the Neo Geo we want to change the fix map by setting `REG_VRAMADDR` to a location within the fix map. That location is the start of the map (`ADDR_FIXMAP`), plus how ever much we need to move within the map to arrive at our desired (x,y) location. Since the fix layer is 32 tiles tall and column oriented, we can get the address we need by multiplying x by 32 and adding y.
+
+Everytime we set one tile, we want to move over by one in the x direction. We accomplish this by setting `REG_VRAMMOD` to 32. Since the fix map is stored in columns, by jumping ahead 32 spots, we end up in the next column over, next to where we just were.
+
+`text` is a pointer to an array of `s8` values. In main when we call `fix_print(10, 14, "Hello Neo Geo !")`, the compiler takes `"Hello Neo Geo!"` and converts it into an array of bytes, and slaps a zero on the end of it. This is known as a null terminated string, and is extremely common in C. 
+
+The while loop is looking at the characters in `text` one by one, and setting them into the fix map, ultimately causing our message to appear on the fix layer.
+
+Remember our tiles almost match ASCII encoding, they are just off by one. The compiler turned `"Hello Neo Geo!"` into an ASCII encoded array of bytes for us, so to get the `H` tile, we just have to take the byte's value (72), add one to it, and thus place the 73rd tile into the fix layer. If you go look at the tile viewer again, you will see the tile at index 73 is indeed the letter 'H'.
+
+### Putting it all together
+
+At this point we have written the entire program. Except there is one more thing we need to do. After we have put our message on the fix layer, we have to keep our game running so that we can see the message. The 68k processor will not stop, it needs to keep running instruction as long as the console is turned on. So for this simple program, we end with an infinite loop to keep the processor busy. With that in mind, the final program is:
+
+```C
+#include <ngdevkit/neogeo.h>
+
+#define BLACK 0x8000
+#define WHITE 0x7FFF
+
+#define PALETTE_SIZE 2
+const u16 palette[PALETTE_SIZE] = { BLACK, WHITE };
+
+void init_palette() {
+    for (u8 i = 0; i < PALETTE_SIZE; ++i) {
+        MMAP_PALBANK1[i] = palette[i];
+    }
+}
+
+void fix_clear() {
+    u8 palette = 0;
+    u16 tileValue = (palette << 12) | 0xFF;
+
+    *REG_VRAMADDR = ADDR_FIXMAP;
+    *REG_VRAMMOD = 1;
+
+    for (u16 i = 0; i < 40 * 32; ++i) {
+        *REG_VRAMRW = tileValue;
+    }
+}
+
+void fix_print(u16 x, u16 y, const u8* text) {
+    *REG_VRAMADDR = ADDR_FIXMAP + (x * 32) + y;
+    *REG_VRAMMOD = 32;
+
+    u8 palette = 0;
+
+    while (*text) {
+        // the S ROM used by this game has the tiles stored just one
+        // off from the ASCII encoding, so we add a one to get the
+        // tile index we need.
+        u16 tileIndex = *text + 1;
+        *REG_VRAMRW = (palette << 12) | tileIndex;
+
+        text += 1;
+    }
+}
+
+int main() {
+    init_palette();
+    fix_clear();
+
+    fix_print(10, 14, "Hello Neo Geo!");
+
+    // the infinite loop that allows our game to keep running
+    for (;;) { }
+
+    // we never actually get to this return, but returning an int
+    // is expected for main() in most C environments
+    return 0;
+}
+```
+
+You can find this code [here in the book's companion repo](https://github.com/city41/ngbook-game/blob/04-hello-world/src/main.c).
+
+## Compiling and running our program
+
+Finally we can compile and run our program. Makes sure you are in the `src/` directory and invoke `make`. This will compile the C code and do all the other needed steps to build out an entire Neo Geo ROM of our program. If you get any errors, see what the error says and see if you can figure out what you did wrong. If you get stuck, you can use the [companion repo](https://github.com/city41/ngbook-game/blob/04-hello-world/src/main.c) as a reference.
+
+Finally, invoke `make gngeo` to see your game running in the emulator.
+
+Congrats! Your first Neo Geo program!
 
 
-## Create the main source code
-
-
-
-Finally
