@@ -84,14 +84,14 @@ clean:
 
 ```
 
-There is a lot going on in this file! Make has a very steep learning curve, so don't worry if this is all gibberish right now. We'll dive more into Make later.
+This file is nuts, especially if you're not experienced with Make. Let's ignore the details for now, we'll dive into ngdevkit's makefiles later.
 
 
 ## Create the S ROM containing a font
 
 The Neo Geo has no built in way to display any kind of letters or numbers. The only thing it can do is show graphic tiles on the screen. Before our app can print out a message, we need to set up some of these tiles to serve as a font.
 
-We will be using the tool sromcrom to convert png files into tiles. First, in the `resources` directory, add a file named `resources.json` with this as its contents:
+We will be sromcrom to convert png files into tiles. First, in the `resources` directory, add a file named `resources.json` like this:
 
 ```json
 {
@@ -109,30 +109,19 @@ We will be using the tool sromcrom to convert png files into tiles. First, in th
 
 sromcrom will read this file and generate tile data accordingly. `romPathRoot` tells sromcrom where to write the ROM files and it is relative to the location of the resources.json file. Since we are generating an S ROM file, a single file will be written to `../src/rom/202-s1.s1`. If we were also generating C ROMs for sprites, then the files `../src/rom/202-c1.c1` and `../src/rom/202-c2.c2` would also be written. 
 
+<div class="callout">
+Why the "202-" prefix? 202 is the NGH number for Puzzle De Pon. We are pretending our game is Puzzle De Pon so that emulators will load it. MAME especially was written to assume only the known commercial games will ever get ran, so we need to pretend to be a commercial game to trick MAME into running our game.
+</div>
+
 The `sromImages` entry is where we tell sromcrom which image files to use to generate the tiles that will go into the S ROM file. We only have one this time, `fixFont.png`. Let's go ahead and create it. You can copy this image into your resources directory to serve as `fixFont.png`
 
 ![fix font](./fixFont.png)
 
-As you can see it's just a small font, with each character being 8x8 pixels in size. The magenta color is how we specify the transparent color, there won't be any actual magenta in the running game.
+As you can see it's just a small font, with each character being 8x8 pixels in size. The magenta color is how we specify transparency, there won't be any magenta displayed in the running game.
 
 ### run sromcrom and check the results
 
-We are now ready to have sromcrom generate our S ROM for us. We can do that by invoking `make srom` inside the `src` directory. This make command told make to find the `srom` target and invoke it. In our Makefile, this is that target:
-
-
-```Makefile
-# fixed tile ROM
-$(SROM) srom: rom
-	cd .. && sromcrom -i resources/resources.json
-```
-
-`$(SROM)` is a variable, if you look inside `Makefile.common`, you will find this line
-
-```Makefile
-SROM=rom/202-s1.s1
-```
-
-So whenever make needs to build the file `rom/202-s1.s1` (which is our S ROM file), it will invoke the command `cd .. && sromcrom -i resources/resources.json`. This is just kicking off sromcrom, and handing it our resources.json file. The `srom` after `$(SROM)` is another way to invoke this target, it lets us type `make srom` on the command line instead of `make rom/202-s1.s1`.
+We are now ready to have sromcrom generate our S ROM for us. We can do that by invoking `make srom` inside the `src` directory. 
 
 You should see a little bit of output from sromcrom:
 
@@ -148,6 +137,10 @@ And if you look inside `src/rom`, you should indeed find the s1 file. Head on ov
 ![our S ROM file loaded into neospriteviewer](./sromInNeospriteviewer.png)
 
 Excellent! Our font has been converted into tiles and is ready to go.
+
+<div class="callout">
+Why are the first 33 tiles skipped? Actually only 32 tiles are skipped, the 33rd tile is "space". The skipped tiles are due to how the Neo Geo does its "eyecatcher", the screen with the Neo Geo logo and the "MAX 330 PRO GEAR SPEC" tagline. We'll fully cover the eyecatcher later, but for now just know skipping those tiles was intentional.
+</div>
 
 
 ### Translating ASCII to tiles
@@ -229,7 +222,7 @@ int main() {
 }
 ```
 
-None of these functions actually exist yet, we have to write them! Let's start with `init_palette`.
+Let's go ahead and start creating these functions.
 
 ### init_palette()
 
@@ -253,7 +246,7 @@ Here we have defined a two color palette and a function which will write it into
 
 ### fix_clear()
 
-Upon booting up the system, it is possible video RAM has garbage values in it. We want to b sure the fix layer is totally clear before we do anything, so our `fix_clear` function will clear it out.
+By the time our game is running, the system has probably already used the fix layer for the eyecatcher. We need to erase everything in the fix layer, so our `fix_clear` does just that:
 
 ```C
 void fix_clear() {
@@ -269,11 +262,11 @@ void fix_clear() {
 }
 ```
 
-When telling the fix layer what tile to use, you need to give it both a tile index and a palette index. This is done by taking both values and combining them into one, by shifting the palette's index to the two four bits of the value
+When telling the fix layer what tile to use, you need to give it both a tile index and a palette index. This is done by taking both values and combining them into one, by shifting the palette's index up to bits 12 through 15 of the 16 bit value
 
 <<< diagram showing the combined values >>>
 
-In our case we are using the palette at index 0, so we don't actually need to do this, as the top bits will default to zero.
+In our case we are using the palette at index 0, so we don't actually need to do this, as the top bits will default to zero. You will later see that combining various chunks of data into one 16 bit word is very common on the Neo.
 
 Then we set `REG_VRAMADDR` to the fix map's address. Remember, `REG_VRAMADDR` is the register that we use to tell the Neo Geo where in video RAM we want to read or write values.
 
@@ -286,7 +279,11 @@ Finally the for loop takes this value, and writes it into video ram 1,280 times,
 <p>In video RAM, all writes are done in 16 bit words. You can never write a single byte to video RAM. Whenever you send a value, it will always be 16 bits. Also whenever you set REG_VRAMMOD to 1, it means "bump the address by one word".
 </div>
 
-But why are we setting the tile index to 0xFF? For reasons we'll get to later in the book, the tile at 0xFF in an S ROM needs to be blank. This is true in our S ROM too (you can see it in the screenshot of the tile viewer above). Since 0xFF is required to be blank, it is a good candidate for clearing out the fix layer.
+But why are we setting the tile index to 0xFF? For reasons we'll get to later in the book, the tile at 0xFF in an S ROM is assumed to be blank. This is true in our S ROM too (you can see it in the screenshot of the tile viewer above). Since 0xFF should be blank, it is a good candidate for clearing out the fix layer.
+
+<div class="pitfall">
+The tile at 0xFF <i>should</i> be blank but nothing enforces that. If your S ROM has some graphics in this tile, you'll likely see that tile dumped all over the place during the eyecatcher and such.
+</div>
 
 ### fix_print()
 
@@ -308,15 +305,13 @@ void fix_print(u16 x, u16 y, const u8* text) {
 }
 ```
 
-First we tell the Neo Geo we want to change the fix map by setting `REG_VRAMADDR` to a location within the fix map. That location is the start of the map (`ADDR_FIXMAP`), plus how ever much we need to move within the map to arrive at our desired (x,y) location. Since the fix layer is 32 tiles tall and column oriented, we can get the address we need by multiplying x by 32 and adding y.
+First we tell the Neo Geo we want to change the fix map by setting `REG_VRAMADDR` to a location within the fix map. That location is the start of the map (`ADDR_FIXMAP`), plus how ever much we need to move within the map to arrive at our desired (x,y) location. Since the fix layer is 32 tiles tall and column oriented, we can get the address we need by multiplying x by 32 and adding on y.
 
 Everytime we set one tile, we want to move over by one in the x direction. We accomplish this by setting `REG_VRAMMOD` to 32. Since the fix map is stored in columns, by jumping ahead 32 spots, we end up in the next column over, next to where we just were.
 
-`text` is a pointer to an array of `s8` values. In main when we call `fix_print(10, 14, "Hello Neo Geo !")`, the compiler takes `"Hello Neo Geo!"` and converts it into an array of bytes, and slaps a zero on the end of it. This is known as a null terminated string, and is extremely common in C. 
+`text` is a classic C char string. In main when we call `fix_print(10, 14, "Hello Neo Geo !")`, the compiler takes `"Hello Neo Geo!"` and converts it into an array of bytes, and slaps a zero on the end of it. This is identical to how strings are formed in just about any C program.
 
-The while loop is looking at the characters in `text` one by one, and setting them into the fix map, ultimately causing our message to appear on the fix layer.
-
-Remember our tiles almost match ASCII encoding, they are just off by one. The compiler turned `"Hello Neo Geo!"` into an ASCII encoded array of bytes for us, so to get the `H` tile, we just have to take the byte's value (72), add one to it, and thus place the 73rd tile into the fix layer. If you go look at the tile viewer again, you will see the tile at index 73 is indeed the letter 'H'.
+The while loop looks at each character in `text` one by one, and adds one to its value to arrive at the tile we need (remember our S ROM's font tiles are placed such that they are off by ASCII encoding by 1).
 
 ### Putting it all together
 
