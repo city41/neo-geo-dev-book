@@ -28,6 +28,10 @@ I am assuming the reader has experience coding in C and using Make. You don't ne
 
 << link to a good C crash course >>
 
+## Thank you and acknowledgements
+
+Over the decades, many people have contributed to understanding how the Neo Geo works and writing programs for it. Honestly, I'm not really in that group. I'm a late comer who is standing on the shoulder of giants. The contributors to the Neo Geo Dev wiki, especially Furrtek, are the true MVPs making all of this possible. Also want to thank Damien Ciabrin for creating ngdevkit. He has done an excellent job understanding how the Neo Geo works and what is expected of a game, and distilling that into an easy to use framework. With ngdevkit you can really focus on building your game rather than worry about many intricacies the hardware demands. Also many thanks to the people who have made tools, written tutorials and blog posts, and released homebrew titles over the years. 
+
 
 [^1]: The arcade version of the Neo Geo was officially coined the "Multi Video System", and thus the acronym "MVS" can be seen as official. But the home acronym, "AES" was coined by the fan community. The home console has the phrase "Advanced Entertainment System" written on it.
 
