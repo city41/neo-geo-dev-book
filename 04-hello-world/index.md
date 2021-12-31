@@ -164,8 +164,8 @@ You can think of the Neo Geo's graphics as being *declarative*. We simply tell t
 But we don't have direct access to the video RAM. Instead, the 68k's memory map has various registers that allow us to interact with video RAM.
 
 <div class="callout">
-<h3>What is a memory map?</h3>
-TODO
+<h3>What is a memory map? What is a register?</h3>
+No worries, they are both covered in detail in the next chapter. Feel free to skip ahead and come back here if you are curious.
 </div>
 
 Here are the registers we will need to draw our tiles
@@ -174,7 +174,7 @@ Here are the registers we will need to draw our tiles
 |----------|--------------|--------------------------------------------------------------------|
 | 0x3c0000 | REG_VRAMADDR | Sets the current video RAM address we want to either read or write | 
 | 0x3c0002 | REG_VRAMRW   | Read or write to the address that was set in REG_VRAMADDR          |
-| 0x3c0004 | REG_VRAMMOD  | After writing to REG_VRAMRW, REG_VRAMADDR will jump ahead by the amount specified in this regiser |
+| 0x3c0004 | REG_VRAMMOD  | After writing to REG_VRAMRW, REG_VRAMADDR will jump ahead by the amount specified in this register |
 
 And finally, we need the address of the fix map in video RAM, which is 0x7000. Thankfully, ngdevkit has named that address `ADDR_FIXMAP` so we don't have to remember it. The fix map is a chunk of memory storing which tiles are currently being drawn on the fix layer. It starts at the upper left corner and reads top to bottom, then left to right. The fix layer has a total size of 40 tiles wide by 32 tiles tall. But it is recommended to only place tiles in the central 38x28 portion of the layer as tiles on the edge can get cut off on some displays.
 
