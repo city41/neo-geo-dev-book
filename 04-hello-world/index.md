@@ -1,6 +1,6 @@
 # Hello World
 
-Finally in chapter four we begin actually coding. We are going to start small, with our only goal being to write a message to the screen.
+Finally we begin actually coding. We are going to start small, with our only goal being to write a message to the screen.
 
 ## What we will be building
 
