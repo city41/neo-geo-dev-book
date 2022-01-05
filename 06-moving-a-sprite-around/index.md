@@ -227,8 +227,148 @@ How do we know if we are doing all of our VRAM changes before vblank ends? There
 
 Finally, we need to write our VRAM functions that will first load our paddle sprites, then move them in response to joystick presses.
 
+### Sprite control blocks
 
+Video RAM is divided into five sections.
 
+<< overall diagram of VRAM >>
 
+When loading a sprite for display, you need to set its attributes in all four sprite control blocks. This isn't difficult, but it's easy to forget what control block does what, or get confused on where in VRAM you're writing to at any given point. In general when working with VRAM I recommend writing a lot of comments reminding you what you are doing because the code itself is not very descriptive.
 
+#### SCB1: the tile map
 
+A sprite can be up to 32 tiles tall. It takes two words to define each tile, so this section contains 64 words per sprite for specifying which tiles to draw for each sprite.
+
+<div class="callout">
+SCB1 is 0x7000 (28,762) words in size. That is enough space to define 448 sprites. Each sprite control block is large enough for 448 sprites. But despite this, the LSPC conks out after sprite 381, so the extra space is largely unused. You are free to use the extra space as scratch memory if you like.
+</div>
+
+<< TODO: diagram, and flesh this out more, show how to write the words >>
+
+#### SCB2: scaling
+
+This section stores the scaling values for each sprite. A sprite can shrink horizontally, vertically or both. We will talk about this more later on in the book. For now we are not scaling any sprites. But we still need to write the value `0xfff` here for all sprites we use, as that tells the LSPC this sprite should be drawn at full size.
+
+<< diagram of SCB2 word >>
+
+<div class="callout">
+Technically this is not true because VRAM initially contains `0xffff` in every word. So by default, sprites will display at full size. It's still good to be explicit and set the size regardless.
+</div>
+
+#### SCB3: Y coordinate, height, and stickiness
+
+SCB3 contains one word per sprite, and this word specifies the sprite's Y location, how tall it is, and whether it is sticky or not.
+
+<< diagram of SCB3 word >>
+
+**Y location:** this is where on the screen the sprite will be, vertically. The point of reference is the sprite's first tile's upper left corner. Strangely, to arrive at the screen coordinate, the LSPC will do `496 - y` to arrive at the final screen y value.  
+
+**Sticky bit:** If this is set, then this sprite will chain up with the previous sprite in VRAM. It will position itself to the same Y location as the previous sprite, and set its X location to just right of the previous sprite. A block of sprites can be combined into a single logical unit by setting the sticky bit on a run of sprites.
+
+<< diagram of control sprite with several sticky sprites >>
+
+To move the entire logical unit, only the first sprite's location needs to be updated.
+
+**Height:** This value tells the LSPC how many of the 32 tiles possibly are actually defined for this sprite. So if a sprite is 4 tiles tall, this value should be 4. We'll talk a lot more about height when we start scaling sprites.
+
+#### SCB4: X location
+
+This section is simple, each word stores each sprite's X location. The final X value on screen is from the left edge of the screen. In other words, X is exactly what you'd expect it to be.
+
+### Defining load_paddle
+
+`load_paddle` is simply setting each sprite control block accordingly in order to load the three tiles that make up the paddle into VRAM
+
+![the paddle](./paddleScaled.png)
+
+```c
+void load_paddle() {
+    const u8 palette = 2;
+
+    for (u8 tx = 0; tx < 3; ++tx) {
+        // set the vram address register to the location for this sprite's tile map
+        *REG_VRAMADDR = ADDR_SCB1 + (SPRITE_INDEX + tx) * SCB1_SPRITE_ENTRY_SIZE;
+        // every time we write to vram, VRAMADDR will increase by one
+        *REG_VRAMMOD = 1;
+
+        // the first sprite is not sticky, it is the "control" sprite. the other
+        // two are sticky and chain up to the first sprite
+        u8 sticky = tx != 0;
+
+        // set our tile index, in this simple case, our loop variable matches
+        // the tiles in our C ROM exactly
+        *REG_VRAMRW = tx;
+        // set the palette for this tile. This word also allows setting other things
+        // such as whether the tile is flipped or not, but we don't need any of that today
+        *REG_VRAMRW = palette << 8;
+
+        // move to sprite control bank 2 to set the sprite's scaling
+        *REG_VRAMADDR = ADDR_SCB2 + SPRITE_INDEX + tx;
+        // this allows us to jump right into SCB3 and then SCB4 after we write to SCB2
+        *REG_VRAMMOD = SCB234_SIZE;
+
+        // set scale (horizontal and vertical)
+        *REG_VRAMRW = 0xFFF;
+
+        // now in SCB3, we set the sprite's y location and x location
+        // as well as whether it is sticky or not, and its tile height (1 in this simple case)
+        *REG_VRAMRW = (TO_SCREEN_Y(paddle.y) << 7) | (sticky << 6) | 1;
+        // now in SCB4, we set x position
+        *REG_VRAMRW = TO_SCREEN_X(paddle.x) << 7;
+    }
+}
+```
+
+The comments in the code above explain what is going on pretty well. We know we need palette 2 by just looking at `paletteDefs.c` and seeing that is the paddle's palette. In real games, we'd have sromcrom emit code for us that will associate palettes with tiles automatically.
+
+After this function has ran, the paddle will appear on the screen.
+
+### Defining move_paddle
+
+Since we have already established the paddle's tiles, scaling and such, when we go to move it we only need to update its x and y values. The values in VRAM only change when you change them, so it's common to load a sprite and leave it there, simply updating parts of the sprite as needed.
+
+```c
+void move_paddle() {
+    // jump to SCB3 for y, then use mod to automatically jump to SCB4 for x
+    *REG_VRAMADDR = ADDR_SCB3 + SPRITE_INDEX;
+    *REG_VRAMMOD = SCB234_SIZE;
+
+    // set the new y and also set height to 1 again. since these two values are packed
+    // into the same word, we need to make sure we set both here, otherwise the sprite
+    // would disappear on screen as height would get set to zero.
+    // we don't need to set the sticky bit this time, since we are only working with the 
+    // control sprite, we know it is not sticky so not setting it here defaults it to zero
+    *REG_VRAMRW = (TO_SCREEN_Y(paddle.y) << 7) | 1;
+
+    // set new x
+    *REG_VRAMRW = TO_SCREEN_X(paddle.x) << 7;
+}
+```
+
+When we set the new y value, we have to also set height again. That is because y, the sticky bit and height are all jammed into the same word. In this simple case we know height is 1, so no big deal. But in a more general case, sometimes you don't know which sprite you are moving. In that case, you can read these values out of VRAM. For example, here is a more general move sprite function
+
+```c
+void move_sprite(u16 spriteIndex, s16 x, s16 y) {
+    // jump to SCB3 for y, then use mod to automatically jump to SCB4 for x
+    *REG_VRAMADDR = ADDR_SCB3 + spriteIndex;
+    *REG_VRAMMOD = SCB234_SIZE;
+
+    u16 scb3Value = *REG_VRAMRW;
+    u8 heightAndSticky = sbc3Value & 0x7f;
+
+    *REG_VRAMADDR = ADDR_SCB3 + spriteIndex;
+
+    // set the new y. Since we are moving the sprite,
+    // can assume it is not sticky
+    *REG_VRAMRW = (TO_SCREEN_Y(newY) << 7) | heightAndSticky;
+
+    // set new x
+    *REG_VRAMRW = TO_SCREEN_X(newX) << 7;
+}
+```
+
+When reading from VRAM, `REG_VRAMMOD` does not do anything. It only changes `REG_VRAMADDR`'s value after a write. If you need to read several places in VRAM, you need to set `REG_VRAMADDR` before each read.
+
+## Conclusion
+
+And with that, we have the start of our breakout game! You should be able to build it with `make` and run it with `make gngeo`. Make sure you are in the `src/` directory when invoking these. If you hit issues, refer to the code in the [companion repo](https://github.com/city41/neo-geo-dev-book-game/tree/06-moving-a-sprite-around) to see where your code differs.
