@@ -4,13 +4,15 @@ type TableOfContentsPageProps = {
 
 function TableOfContentsPage({ chapters }: TableOfContentsPageProps) {
 	return (
-		<div className="max-w-4xl mx-auto mb-24">
-			<h1>Table of Contents</h1>
+		<div className="max-w-4xl mx-auto my-24">
+			<h1 className="text-4xl font-bold mb-8">Table of Contents</h1>
 			<ul>
 				{chapters.map((c) => {
 					return (
 						<li key={c.slug}>
-							<a href={`/book/${c.slug}`}>{c.meta.title}</a>
+							<a className="hover:underline" href={`/book/${c.slug}`}>
+								{c.meta.chapterNumber}: {c.meta.title}
+							</a>
 						</li>
 					);
 				})}
