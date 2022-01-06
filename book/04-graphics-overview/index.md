@@ -1,8 +1,13 @@
-# Graphics Overview
+---
+chapterNumber: 4
+title: Graphics Overview
+status: rough-draft
+version: 0.0.1
+---
 
 In the 80s and 90s, memory, integrated circuits and other components of game hardware was quite expensive. This expense forced hardware designers to make do with less, and they got creative with how they enabled games to display graphics on the screen.
 
-Graphics were almost always defined using tiles, which were typically 8x8 or 16x16 chunks of graphics. A scene on the screen was built up using these tiles rather than specifying each and every pixel. If a game console has a screen resolution of 320x224 and each pixel's color can be chosen using a 16 bit color space, the system would need at least 140 kilobytes of video RAM to store a screen 
+Graphics were almost always defined using tiles, which were typically 8x8 or 16x16 chunks of graphics. A scene on the screen was built up using these tiles rather than specifying each and every pixel. If a game console has a screen resolution of 320x224 and each pixel's color can be chosen using a 16 bit color space, the system would need at least 140 kilobytes of video RAM to store a screen
 
 <<320 x 224 yields 71,680 pixels, each pixel taking up two bytes (5 bits each for red, green and blue)>>
 
@@ -18,7 +23,7 @@ Each tile only needs to be defined once in RAM (or ROM), and then it only takes 
 
 ## Palettes
 
-Rather than allowing tiles to specify exactly which color each of their pixels are, tiles are normally indexed. That means each pixel in the tile is usually stored as a number from 0 to 15. Then a corresponding 16 color palette is used to specify what each color index is. 
+Rather than allowing tiles to specify exactly which color each of their pixels are, tiles are normally indexed. That means each pixel in the tile is usually stored as a number from 0 to 15. Then a corresponding 16 color palette is used to specify what each color index is.
 
 << graphic showing a palette, an indexed tile, and the final result >>
 
@@ -34,7 +39,7 @@ Most early game systems like the Sega Megadrive have very specific ways that til
 
 << blown out graphic of Sonic the Hedgehog showing the planes and sprites >>
 
-When defining a background on the Megadrive, the developer must setup the two background planes to accomplish this. This sounds limiting, and it is, but there are advantages too. For example, each plane can be scrolled in any direction quite easily. It's even possible to scroll individual rows of a plane to accomplish 3D-type effects 
+When defining a background on the Megadrive, the developer must setup the two background planes to accomplish this. This sounds limiting, and it is, but there are advantages too. For example, each plane can be scrolled in any direction quite easily. It's even possible to scroll individual rows of a plane to accomplish 3D-type effects
 
 << bathhouse scene in SF2 to show line scroll effect >>
 
@@ -57,7 +62,7 @@ A sprite can be scaled horizontally and vertically, and each individual tile spe
 The tiles for sprites are stored in the C ROMs. Sometimes a Neo Geo tile is called a "character", hence the 'C'. Each tile is 16x16 pixels, and indexed from 0 to 15
 
 << diagram of a tile >>
- 
+
 Zero always means transparent, even if the tile will be used for a background. Neo Geo games can store an immense quantity of tiles, maxing out at 1,048,576. This equates to 128 megabytes of graphic data! So even though graphics are built out of tiles, in many games so many different tiles are used at once, the resulting screen looks like a fully hand crafted scene rather than having that "repeated tile look".
 
 << screenshots of metal slug and last blade >>

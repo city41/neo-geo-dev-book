@@ -1,4 +1,9 @@
-# Moving a Sprite Around
+---
+chapterNumber: 7
+title: Moving a Sprite Around
+status: rough-draft
+version: 0.0.1
+---
 
 Most of the code examples for the remainder of the book will have us gradually building up a simple game of breakout. The final game will look like this
 
@@ -18,33 +23,33 @@ A real Neo Geo game has lots of graphics, and normally they are constructed from
 
 Having Sromcrom generate the S and C ROM files for us is handy, but it's not enough in a real game. Our game code needs to know which tile is which. Loading these files in the tile viewer and manually writing the tile indices into our code is not realistic for a large game. Especially considering everytime you add a new image into the mix, the tile indices will likely all change!
 
-To handle this, sromcrom can also generate source code. Since our app is written in C, we will create C code templates to give to sromcrom. It will use these templates to generate the code. For this app, we are only going to do this for the palettes. 
+To handle this, sromcrom can also generate source code. Since our app is written in C, we will create C code templates to give to sromcrom. It will use these templates to generate the code. For this app, we are only going to do this for the palettes.
 
 In `resources.json`, lets tell sromcrom about our palette templates
 
 ```json
 {
-    "romPathRoot": "../src/rom/202-",
-    "palettes": {
-        "codeEmit": [
-            {
-                "template": "../src/sromcromTemplates/paletteDefs.h.ejs",
-                "dest": "../src/paletteDefs.h"
-            },
-            {
-                "template": "../src/sromcromTemplates/paletteDefs.c.ejs",
-                "dest": "../src/paletteDefs.c"
-            }
-        ]
-    },
-    "sromImages": {
-            "inputs": [
-                {
-                        "name": "font",
-                        "imageFile": "./fixFont.png"
-                    }
-            ]
-    },
+	"romPathRoot": "../src/rom/202-",
+	"palettes": {
+		"codeEmit": [
+			{
+				"template": "../src/sromcromTemplates/paletteDefs.h.ejs",
+				"dest": "../src/paletteDefs.h"
+			},
+			{
+				"template": "../src/sromcromTemplates/paletteDefs.c.ejs",
+				"dest": "../src/paletteDefs.c"
+			}
+		]
+	},
+	"sromImages": {
+		"inputs": [
+			{
+				"name": "font",
+				"imageFile": "./fixFont.png"
+			}
+		]
+	}
 }
 ```
 
@@ -112,7 +117,7 @@ ELF=rom.elf
 ```
 
 That line is the only change we need to make in the Makefile.
- 
+
 ## init_palette()
 
 Since we are initializing more than one palette, we'll change the name to be plural. The code is almost the same as before, but rather than loading our simple hardcoded palette, we will load the palettes defined in `paletteDefs.c`.
@@ -143,7 +148,7 @@ struct Paddle paddle = {
 };
 ```
 
-Since our paddle struct is not `const`, its values can be changed. That means it will get loaded into the 68k's main 32kb of memory. Understanding `const` and its implications on how the P ROM is built and how the 32kb of RAM gets used is important, so much so the next chapter will go into a lot of detail on it. 
+Since our paddle struct is not `const`, its values can be changed. That means it will get loaded into the 68k's main 32kb of memory. Understanding `const` and its implications on how the P ROM is built and how the 32kb of RAM gets used is important, so much so the next chapter will go into a lot of detail on it.
 
 ## Our game loop
 
@@ -153,7 +158,7 @@ Let's jump ahead a bit and take a look at `main()`
 int main() {
     init_palettes();
     fix_clear();
-    
+
     fix_print(3, 4, "Use left and right to move paddle");
     load_paddle();
 
@@ -165,7 +170,7 @@ int main() {
         if (bios_p1current & CNT_RIGHT) {
             paddle.x += 1;
         }
-        
+
         wait_vblank();
         move_paddle();
     }
@@ -176,8 +181,8 @@ int main() {
 
 The beginning looks familiar, we are initializing things just like we did in hello world. We also initialize our paddle's sprites with `load_paddle()`. But this time the `for` loop is no longer empty. Here we have defined a very simple game loop of
 
-* read inputs and move the paddle accordingly
-* draw the paddle on screen at its current location
+- read inputs and move the paddle accordingly
+- draw the paddle on screen at its current location
 
 ### Reading the joystick
 
@@ -261,7 +266,7 @@ SCB3 contains one word per sprite, and this word specifies the sprite's Y locati
 
 << diagram of SCB3 word >>
 
-**Y location:** this is where on the screen the sprite will be, vertically. The point of reference is the sprite's first tile's upper left corner. Strangely, to arrive at the screen coordinate, the LSPC will do `496 - y` to arrive at the final screen y value.  
+**Y location:** this is where on the screen the sprite will be, vertically. The point of reference is the sprite's first tile's upper left corner. Strangely, to arrive at the screen coordinate, the LSPC will do `496 - y` to arrive at the final screen y value.
 
 **Sticky bit:** If this is set, then this sprite will chain up with the previous sprite in VRAM. It will position itself to the same Y location as the previous sprite, and set its X location to just right of the previous sprite. A block of sprites can be combined into a single logical unit by setting the sticky bit on a run of sprites.
 
@@ -336,7 +341,7 @@ void move_paddle() {
     // set the new y and also set height to 1 again. since these two values are packed
     // into the same word, we need to make sure we set both here, otherwise the sprite
     // would disappear on screen as height would get set to zero.
-    // we don't need to set the sticky bit this time, since we are only working with the 
+    // we don't need to set the sticky bit this time, since we are only working with the
     // control sprite, we know it is not sticky so not setting it here defaults it to zero
     *REG_VRAMRW = (TO_SCREEN_Y(paddle.y) << 7) | 1;
 

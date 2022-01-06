@@ -1,4 +1,9 @@
-# Intro
+---
+chapterNumber: 1
+title: Introduction
+status: rough-draft
+version: 0.0.1
+---
 
 The Neo Geo was designed by SNK with a lot of help from the Alpha Denshi corporation (later known as ADK) in the late 80s. It launched in Japan in 1990 and proved to be a smash hit throughout most of the world's arcades. It's final official game, Samurai Shodown V Special, was released in 2004, capping off an impressive 14 year run.
 
@@ -6,7 +11,7 @@ The Neo Geo is quite famous for being released both in arcades as the Neo Geo MV
 
 In 1994 SNK released the Neo Geo CD, which also sports virtually identical hardware as the MVS. The main difference is the ROMs on the cartridges were replaced with onboard RAM that gets loaded from the contents on the CD. Thus the Neo Geo CD can suffer from long loading times and struggles to fit large games into its available RAM. Due to this, the CD system did not get any of the later Neo Geo games released for it. The CD system did get some exclusive games and also has the nice bonus of red book music, which keeps it from being totally obsolete these days.
 
-The Neo Geo had great lasting power in the arcade most likely due to its flexible sprite architecture and its ability to address a very large amount of graphic data. 
+The Neo Geo had great lasting power in the arcade most likely due to its flexible sprite architecture and its ability to address a very large amount of graphic data.
 
 Most systems at the time displayed graphics on specific layers, with dedicated background and sprite layers. The Neo Geo instead simply offers 381 sprites and it is up to the developer to decide what they do. It's easier to dedicate a lot of sprites to enemies and bullets in a hectic game such as a shooter or allocate more of the sprites to intricate backgrounds for example. This flexibility gave developers more freedom in their game design.
 
@@ -30,12 +35,10 @@ I am assuming the reader has experience coding in C and using Make. You don't ne
 
 ## Thank you and acknowledgements
 
-Over the decades, many people have contributed to understanding how the Neo Geo works and writing programs for it. Honestly, I'm not really in that group. I'm a late comer who is standing on the shoulder of giants. The contributors to the Neo Geo Dev wiki, especially Furrtek, are the true MVPs making all of this possible. Also want to thank Damien Ciabrin for creating ngdevkit. He has done an excellent job understanding how the Neo Geo works and what is expected of a game, and distilling that into an easy to use framework. With ngdevkit you can really focus on building your game rather than worry about many intricacies the hardware demands. Also many thanks to the people who have made tools, written tutorials and blog posts, and released homebrew titles over the years. 
-
+Over the decades, many people have contributed to understanding how the Neo Geo works and writing programs for it. Honestly, I'm not really in that group. I'm a late comer who is standing on the shoulder of giants. The contributors to the Neo Geo Dev wiki, especially Furrtek, are the true MVPs making all of this possible. Also want to thank Damien Ciabrin for creating ngdevkit. He has done an excellent job understanding how the Neo Geo works and what is expected of a game, and distilling that into an easy to use framework. With ngdevkit you can really focus on building your game rather than worry about many intricacies the hardware demands. Also many thanks to the people who have made tools, written tutorials and blog posts, and released homebrew titles over the years.
 
 [^1]: The arcade version of the Neo Geo was officially coined the "Multi Video System", and thus the acronym "MVS" can be seen as official. But the home acronym, "AES" was coined by the fan community. The home console has the phrase "Advanced Entertainment System" written on it.
-
 [^2]: Capcom released the CP Sytem Changer, commonly called the "CPS 1.5", as a home system that ran identical games to the arcade CPS1. So the Neo Geo being the only system to do this is not technically true. However the CPS 1.5 only had 11 games released and is merely a footnote these days. Many people have never heard of it, while virtually any gamer from the 90s is familiar with the Neo Geo.
-
-[^3]: During the Neo Geo's lifetime, Capcom released the CPS 2 which also sported the ability to address a lot of graphic data. 
-<<< wikipedia says the ROM limit is 40.25 MB, but how much of that is graphics? >>>
+[^3]:
+    During the Neo Geo's lifetime, Capcom released the CPS 2 which also sported the ability to address a lot of graphic data.
+    <<< wikipedia says the ROM limit is 40.25 MB, but how much of that is graphics? >>>

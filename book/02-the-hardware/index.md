@@ -1,12 +1,17 @@
-# The Hardware
+---
+chapterNumber: 2
+title: The Hardware
+status: rough-draft
+version: 0.0.1
+---
 
-Programming the Neo Geo requires understanding its hardware well. The various CPUs and chips on the motherboard work with the various ROMs in the game cart to make the game happen. 
+Programming the Neo Geo requires understanding its hardware well. The various CPUs and chips on the motherboard work with the various ROMs in the game cart to make the game happen.
 
 In this short chapter we'll take a quick tour of the major chips and ROM types. Don't worry about remembering all of this, as you dig into Neo dev you'll get to know this stuff quite well.
 
 ## Motorola 68k CPU
 
-The 68000 is the main central processing unit and responsible for executing the primary game code. It runs at 12mhz, has 32 bit registers and has no native floating point support. 
+The 68000 is the main central processing unit and responsible for executing the primary game code. It runs at 12mhz, has 32 bit registers and has no native floating point support.
 
 ## Zilog Z80 CPU
 
@@ -56,13 +61,6 @@ In order to take full advantage of the graphic system, the tiles need to be stor
 
 The S ROM also contains graphic tiles, but of a different kind. The Neo Geo has a separate graphic layer called the fix layer. This layer is always drawn on top of everything else, and it cannot be scrolled or repositioned. Games typicaly use this layer for the score, health bars, credits display, etc. The fix layer is also commonly used to display text on the screen.
 
-The MVS has a built in S ROM that is used to draw the service screen. 
+The MVS has a built in S ROM that is used to draw the service screen.
 
 << screenshot of the service screen >>
-
-
-
-
-
-
-

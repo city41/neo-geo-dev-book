@@ -10,7 +10,7 @@ I just started this very recently, so there's quite a long ways to go.
 
 ## Goals
 
-* Walk through building an entire game from start to finish. The game is the classic snake game often found on old cell phones.
+* Walk through building an entire simple breakout game from start to finish.
 * Understand the Neo Geo's hardware and how it impacts game creation
 * Be able to program the Z80 enough to pull off simple sound effects and music
 * stretch goal: additional chapters that give some insight into some more advanced topics such as fixed point numbers, scaling, palette swapping, performance, debugging with gdb etc.

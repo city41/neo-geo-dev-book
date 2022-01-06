@@ -1,0 +1,53 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# ghidra
+decomp/tools/SMA4GhidraLoader/.gradle
+decomp/tools/SMA4GhidraLoader/build
+decomp/tools/SMA4GhidraLoader/dist
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env.*
+
+# vercel
+.vercel
+
+.idea
+
+# copyrighted files
+**/*.gba
+/src/levelData/sma4savtool_classic1_2.sav
+/src/levelData/smaghetti_classic1_2.sav
+/src/levelData/star_02.level
+/brute/results*
+/brute/*.sav
+/brute/*.json
+/pngsForResources
+
+# binary files
+/binaryLevels
+
+tsconfig.tsbuildinfo

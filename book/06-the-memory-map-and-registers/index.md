@@ -1,10 +1,15 @@
-# The Memory Map and Registers
+---
+chapterNumber: 6
+title: The Memory Map and Registers
+status: rough-draft
+version: 0.0.1
+---
 
 A typical modern computer will have gigabytes of memory and many different processes all running at the same time, each using a slice of that available memory. The kernel will fib a bit and present a virtual memory space to the program that makes the program feel as though it is the only one using memory. It is free to read to and write from memory in this virtual space whenver it needs, and the kernel will intercept and ensure the program gets what it needs from the real physical memory of the computer.
 
 ## The 68k's memory map
 
-The Neo Geo does not work like this at all, it's all much simpler. Essentially, your game is the only thing running[^1], so it has free reign on the entire actual physical memory. There is 64kb of work RAM available, of which 32 kilobytes is intended for the BIOS, and the other 32kb is for use by the running game. 
+The Neo Geo does not work like this at all, it's all much simpler. Essentially, your game is the only thing running[^1], so it has free reign on the entire actual physical memory. There is 64kb of work RAM available, of which 32 kilobytes is intended for the BIOS, and the other 32kb is for use by the running game.
 
 Every byte in memory is given an address, starting at zero and going up by one for each successive byte. When the 68k wants to read to or write from memory, it will send the needed address out on the address bus. The 68k's address bus is 24 bits wide, which means it can ask for addresses from 0 to 16,777,215. So in other words, the 68k can work with up to 16 megabytes of memory.
 
@@ -34,11 +39,11 @@ In the hello world program, we needed to specify how the tiles on the fix layer 
 
 We already used the main video RAM registers in our hello world program. Here they are again
 
-| Address  | Name         | Description                                                        |
-|----------|--------------|--------------------------------------------------------------------|
-| 0x3c0000 | REG_VRAMADDR | Sets the current video RAM address we want to either read or write | 
-| 0x3c0002 | REG_VRAMRW   | Read or write to the address that was set in REG_VRAMADDR          |
-| 0x3c0004 | REG_VRAMMOD  | After writing to REG_VRAMRW, REG_VRAMADDR will jump ahead by the amount specified in this regiser 
+| Address  | Name         | Description                                                                                       |
+| -------- | ------------ | ------------------------------------------------------------------------------------------------- |
+| 0x3c0000 | REG_VRAMADDR | Sets the current video RAM address we want to either read or write                                |
+| 0x3c0002 | REG_VRAMRW   | Read or write to the address that was set in REG_VRAMADDR                                         |
+| 0x3c0004 | REG_VRAMMOD  | After writing to REG_VRAMRW, REG_VRAMADDR will jump ahead by the amount specified in this regiser |
 
 We now understand what "address" in the table means. That address is located in the 68k's memory map.
 
@@ -51,5 +56,3 @@ We are free to read to and write from any address in the 68k's memory map at any
 Similarly, you are free to send data over to video RAM whenever you want, but as you will see when we get further into creating a real game, you want to be careful when you change video RAM values, as sometimes that change can be seen by the player right away, causing graphical glitches.
 
 [^1] The system ROM (aka the BIOS) is also running on the hardware at various times. Your game and the system ROM take turns using the CPU. As we will see later on, the system ROM will expect our program to respond and behave in certain ways in order for our game to operate properly.
-
-

@@ -1,4 +1,9 @@
-# Hello World
+---
+chapterNumber: 5
+title: Hello World
+status: rough-draft
+version: 0.0.1
+---
 
 Finally we begin actually coding. We are going to start small, with our only goal being to write a message to the screen.
 
@@ -26,7 +31,7 @@ Makefile.common
 Makefile.config.in
 ```
 
-`resources` and `src` are just empty directories to start, `configure.ac`, `Makefile.common`,  and `Makefile.config.in` you can copy in from the [ngdevkit-examples project](https://github.com/dciabrin/ngdevkit-examples/)
+`resources` and `src` are just empty directories to start, `configure.ac`, `Makefile.common`, and `Makefile.config.in` you can copy in from the [ngdevkit-examples project](https://github.com/dciabrin/ngdevkit-examples/)
 
 From this directory in a terminal, run the `autoreconf` command. This will take the `configure.ac` file and create a `configure` script. Once the script is created, run it with `./configure`. `configure` will look at the `Makefile.config.in` file and create a `Makefile.config` file from it based on how ngdevkit is installed on your system.
 
@@ -86,7 +91,6 @@ clean:
 
 This file is nuts, especially if you're not experienced with Make. Let's ignore the details for now, we'll dive into ngdevkit's makefiles later.
 
-
 ## Create the S ROM containing a font
 
 The Neo Geo has no built in way to display any kind of letters or numbers. The only thing it can do is show graphic tiles on the screen. Before our app can print out a message, we need to set up some of these tiles to serve as a font.
@@ -107,7 +111,7 @@ We will be sromcrom to convert png files into tiles. First, in the `resources` d
 }
 ```
 
-sromcrom will read this file and generate tile data accordingly. `romPathRoot` tells sromcrom where to write the ROM files and it is relative to the location of the resources.json file. Since we are generating an S ROM file, a single file will be written to `../src/rom/202-s1.s1`. If we were also generating C ROMs for sprites, then the files `../src/rom/202-c1.c1` and `../src/rom/202-c2.c2` would also be written. 
+sromcrom will read this file and generate tile data accordingly. `romPathRoot` tells sromcrom where to write the ROM files and it is relative to the location of the resources.json file. Since we are generating an S ROM file, a single file will be written to `../src/rom/202-s1.s1`. If we were also generating C ROMs for sprites, then the files `../src/rom/202-c1.c1` and `../src/rom/202-c2.c2` would also be written.
 
 <div class="callout">
 Why the "202-" prefix? 202 is the NGH number for Puzzle De Pon. We are pretending our game is Puzzle De Pon so that emulators will load it. MAME especially was written to assume only the known commercial games will ever get ran, so we need to pretend to be a commercial game to trick MAME into running our game.
@@ -121,7 +125,7 @@ As you can see it's just a small font, with each character being 8x8 pixels in s
 
 ### run sromcrom and check the results
 
-We are now ready to have sromcrom generate our S ROM for us. We can do that by invoking `make srom` inside the `src` directory. 
+We are now ready to have sromcrom generate our S ROM for us. We can do that by invoking `make srom` inside the `src` directory.
 
 You should see a little bit of output from sromcrom:
 
@@ -142,7 +146,6 @@ Excellent! Our font has been converted into tiles and is ready to go.
 Why are the first 33 tiles skipped? Actually only 32 tiles are skipped, the 33rd tile is "space". The skipped tiles are due to how the Neo Geo does its "eyecatcher", the screen with the Neo Geo logo and the "MAX 330 PRO GEAR SPEC" tagline. We'll fully cover the eyecatcher later, but for now just know skipping those tiles was intentional.
 </div>
 
-
 ### Translating ASCII to tiles
 
 In our C program, when we create a string such as `"Hello Neo Geo!"`, it will encode those characters into ASCII. ASCII is just a mapping from numbers to characters, for example capital `A` is 65 in ASCII.
@@ -153,13 +156,13 @@ Source: Wikipedia, released to the public domain
 
 The first character in ASCII that we care about is space, which is number 32. If you compare the table to the fixFont.png image above, you'll see they match each other.
 
-Sromcrom's space tile is at index 33, just off by one from ASCII. So to display text on the Neo Geo using or S ROM file, we just need to take the ASCII code and add one to it to get the corresponding tile index. 
+Sromcrom's space tile is at index 33, just off by one from ASCII. So to display text on the Neo Geo using or S ROM file, we just need to take the ASCII code and add one to it to get the corresponding tile index.
 
 ## How to set tiles on the fix layer
 
 We now know how to pick the tiles to display on the screen, but how do we actually display them? That is where the Neo Geo's Video RAM comes into play.
 
-You can think of the Neo Geo's graphics as being *declarative*. We simply tell the Neo Geo "place tile 34 at this location", and the hardware will do it for us. This is done by setting values in Video RAM.
+You can think of the Neo Geo's graphics as being _declarative_. We simply tell the Neo Geo "place tile 34 at this location", and the hardware will do it for us. This is done by setting values in Video RAM.
 
 But we don't have direct access to the video RAM. Instead, the 68k's memory map has various registers that allow us to interact with video RAM.
 
@@ -170,10 +173,10 @@ No worries, they are both covered in detail in the next chapter. Feel free to sk
 
 Here are the registers we will need to draw our tiles
 
-| Address  | Name         | Description                                                        |
-|----------|--------------|--------------------------------------------------------------------|
-| 0x3c0000 | REG_VRAMADDR | Sets the current video RAM address we want to either read or write | 
-| 0x3c0002 | REG_VRAMRW   | Read or write to the address that was set in REG_VRAMADDR          |
+| Address  | Name         | Description                                                                                        |
+| -------- | ------------ | -------------------------------------------------------------------------------------------------- |
+| 0x3c0000 | REG_VRAMADDR | Sets the current video RAM address we want to either read or write                                 |
+| 0x3c0002 | REG_VRAMRW   | Read or write to the address that was set in REG_VRAMADDR                                          |
 | 0x3c0004 | REG_VRAMMOD  | After writing to REG_VRAMRW, REG_VRAMADDR will jump ahead by the amount specified in this register |
 
 And finally, we need the address of the fix map in video RAM, which is 0x7000. Thankfully, ngdevkit has named that address `ADDR_FIXMAP` so we don't have to remember it. The fix map is a chunk of memory storing which tiles are currently being drawn on the fix layer. It starts at the upper left corner and reads top to bottom, then left to right. The fix layer has a total size of 40 tiles wide by 32 tiles tall. But it is recommended to only place tiles in the central 38x28 portion of the layer as tiles on the edge can get cut off on some displays.
@@ -184,7 +187,7 @@ Let's say we want to draw `@` in the fix layer at x=10 and y=14. Here is what we
 
 1. Determine `@` tile index, which is 65.
 2. Figure out how far into the fix map corresponds to the tile at (10,14)
-    * This is (x * 32) + y, which is 334
+   - This is (x \* 32) + y, which is 334
 3. Set `REG_VRAMADDR` to this value, in C this would be `*REG_VRAMADDR = ADDR_FIXMAP + 334;`
 4. Write `65` to `REG_VRAMRW`, ie `*REG_VRAMRW = 65;`
 
@@ -205,9 +208,9 @@ We pull in the main ngdevkit header file so we can access it, you will do this i
 
 We need to:
 
-* initialize a palette
-* clear the fix layer, in case video RAM has garbage values in it
-* draw our message on the screen
+- initialize a palette
+- clear the fix layer, in case video RAM has garbage values in it
+- draw our message on the screen
 
 That will look something like this
 
@@ -272,7 +275,7 @@ Then we set `REG_VRAMADDR` to the fix map's address. Remember, `REG_VRAMADDR` is
 
 We then set `REG_VRAMMOD` to 1. This means every time we send a value to `REG_VRAMRW`, the system will then bump the address that `REG_VRAMADDR` is set to by one word (two bytes). This allows us to just keep sending values to `REG_VRAMRW` repeatedly and the system will keep incrementing the address for us.
 
-Finally the for loop takes this value, and writes it into video ram 1,280 times, which is 40 * 32, which is how many tiles across (40) and tall (32) the fix layer is.
+Finally the for loop takes this value, and writes it into video ram 1,280 times, which is 40 \* 32, which is how many tiles across (40) and tall (32) the fix layer is.
 
 <div class="callout">
 <h3>Video RAM words</h3>
@@ -385,5 +388,3 @@ Finally we can compile and run our program. Makes sure you are in the `src/` dir
 Finally, invoke `make gngeo` to see your game running in the emulator.
 
 Congrats! Your first Neo Geo program!
-
-
