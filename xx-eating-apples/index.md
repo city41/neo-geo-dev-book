@@ -1,1 +1,0 @@
-# Eating apples

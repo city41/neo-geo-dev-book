@@ -1,5 +1,0 @@
----
-title: Modern Neo Geo Development
-author: Matt Greer
-language: en-US
-...
