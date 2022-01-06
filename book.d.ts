@@ -1,13 +1,15 @@
+type ChapterStatus =
+	| 'stub'
+	| 'brainstorming'
+	| 'rough-draft'
+	| 'alpha'
+	| 'beta'
+	| 'complete';
+
 type ChapterMeta = {
 	chapterNumber: number | string;
 	title: string;
-	status:
-		| 'stub'
-		| 'brainstorming'
-		| 'rough-draft'
-		| 'alpha'
-		| 'beta'
-		| 'complete';
+	status: ChapterStatus;
 	version: string;
 	description?: string;
 };

@@ -5,7 +5,7 @@ status: rough-draft
 version: 0.0.1
 ---
 
-The Neo Geo was designed by SNK with a lot of help from the Alpha Denshi corporation (later known as ADK) in the late 80s. It launched in Japan in 1990 and proved to be a smash hit throughout most of the world's arcades. It's final official game, Samurai Shodown V Special, was released in 2004, capping off an impressive 14 year run.
+The Neo Geo was designed by SNK with a lot of help from the Alpha Denshi corporation (later known as ADK) in the late 80s. It launched in Japan in 1990 and proved to be a smash hit throughout most of the world's arcades. Its final official game, Samurai Shodown V Special, was released in 2004, capping off an impressive 14 year run.
 
 The Neo Geo is quite famous for being released both in arcades as the Neo Geo MVS and in homes as the Neo Geo AES[^1]. It is the only console to bring exact arcade hardware into the home[^2]. Virtually all Neo Geo games can run on either the MVS or AES without requiring any changes. While the MVS was a great success for SNK, the AES remained niche due to its very high price tag. SNK did an admirable job supporting the home system despite this, releasing most MVS games on AES as well.
 

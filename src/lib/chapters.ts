@@ -4,7 +4,7 @@ import matter from 'gray-matter';
 
 type Chapter = {
 	slug: string;
-	meta: Record<string, unknown>;
+	meta: ChapterMeta;
 	content: string;
 };
 
@@ -34,7 +34,7 @@ function verifyMeta(meta: unknown): meta is ChapterMeta {
 	);
 }
 
-function getChapterBySlug(slug: string) {
+function getChapterBySlug(slug: string): Chapter {
 	const fullPath = join(bookDirectory, slug, 'index.md');
 	const fileContents = fs.readFileSync(fullPath, 'utf8');
 	const { data, content } = matter(fileContents);
