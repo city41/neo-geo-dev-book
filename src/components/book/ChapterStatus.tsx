@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { StatusBadge } from './StatusBadge';
 
 type ChapterStatusProps = {
 	className?: string;
@@ -16,18 +17,7 @@ function ChapterStatus({ className, status, version }: ChapterStatusProps) {
 		>
 			<div className="flex flex-row gap-x-2 items-center">
 				<div>status:</div>
-				<div
-					className={clsx('px-2 py-1 text-white font-bold', {
-						'bg-red-500': status === 'brainstorming',
-						'bg-yellow-900': status === 'stub',
-						'bg-yellow-700': status === 'rough-draft',
-						'bg-green-600': status === 'alpha',
-						'bg-blue-600': status === 'beta',
-						'bg-indigo-700': status === 'complete',
-					})}
-				>
-					{status.replace(/-/g, ' ')}
-				</div>
+				<StatusBadge status={status} />
 			</div>
 			<div>
 				version: <span className="font-bold">{version}</span>
