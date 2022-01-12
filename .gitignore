@@ -9,8 +9,7 @@
 /coverage
 
 # next.js
-/.next/
-/out/
+/.next/ /out/
 
 # production
 /build
@@ -51,3 +50,13 @@ yarn-error.log*
 /binaryLevels
 
 tsconfig.tsbuildinfo
+
+# nextjs stuff
+.next
+
+# images that get copied into public
+public/*.png
+public/*.svg
+public/*.gif
+public/*.jpg
+public/*.jpeg
