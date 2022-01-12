@@ -30,6 +30,7 @@ module.exports = {
 						},
 						pre: {
 							maxWidth: '100vw',
+							fontSize: '0.9em !important',
 						},
 					},
 				},
