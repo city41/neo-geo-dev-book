@@ -17,7 +17,10 @@ function ChapterPage({
 	content,
 }: ChapterPageProps) {
 	return (
-		<div className="max-w-4xl mx-auto mb-24 flex flex-col items-center">
+		<div
+			className="mx-auto mb-24 flex flex-col items-center"
+			style={{ width: '65ch', maxWidth: '95vw' }}
+		>
 			<BookNavigation
 				className="mt-8 mb-24"
 				currentChapterNumber={currentChapterNumber}
