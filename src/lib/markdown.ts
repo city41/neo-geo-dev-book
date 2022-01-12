@@ -9,5 +9,7 @@ export default async function markdownToHtml(
 	// @ts-ignore prism seems to not quite meet use()'s expected param type
 	const result = await remark().use(html).use(prism).use(gfm).process(markdown);
 
-	return result.toString();
+	// fudge all img src's to be the root, so they can be found in public
+	// TODO: there has to be a better way ... also see scripts/copyImagesToPublic.sh
+	return result.toString().replace(/src="\./g, 'src="');
 }
