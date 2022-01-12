@@ -13,7 +13,7 @@ In this chapter we will simply add the paddle on screen and enable moving it lef
 
 ![screenshot of this chapter's game](./screenshotOfPaddleOnScreen.png)
 
-You can see this chapter's final code at [this branch](https://github.com/city41/neo-geo-dev-book-game/tree/06-moving-a-sprite-around) in the book's companion game repo. Take a look at [main.c](https://github.com/city41/neo-geo-dev-book-game/blob/06-moving-a-sprite-around/src/main.c) and you will see the overall structure of the code is similar to the hello world code, and functions like `fix_clear` and `fix_print` haven't changed. So we'll just focus on the new stuff.
+You can see this chapter's final code at [this branch](https://github.com/city41/neo-geo-dev-book-game/tree/07-moving-a-sprite-around) in the book's companion game repo. Take a look at [main.c](https://github.com/city41/neo-geo-dev-book-game/blob/07-moving-a-sprite-around/src/main.c) and you will see the overall structure of the code is similar to the hello world code, and functions like `fix_clear` and `fix_print` haven't changed. So we'll just focus on the new stuff.
 
 If you are following along in your own codebase, you can use the hello world app as a starting point. Either copy the entire project directory to a new location, or check out a new branch if you are using source control.
 
@@ -401,4 +401,4 @@ When reading from VRAM, `REG_VRAMMOD` does not do anything. It only changes `REG
 
 ## Conclusion
 
-And with that, we have the start of our breakout game! You should be able to build it with `make` and run it with `make gngeo`. The arrow keys should make the paddle move left and right. Make sure you are in the `src/` directory when invoking these. If you hit issues, refer to the code in the [companion repo](https://github.com/city41/neo-geo-dev-book-game/tree/06-moving-a-sprite-around) to see where your code differs.
+And with that, we have the start of our breakout game! You should be able to build it with `make` and run it with `make gngeo`. The arrow keys should make the paddle move left and right. Make sure you are in the `src/` directory when invoking these. If you hit issues, refer to the code in the [companion repo](https://github.com/city41/neo-geo-dev-book-game/tree/07-moving-a-sprite-around) to see where your code differs.

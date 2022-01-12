@@ -15,7 +15,7 @@ Saying "Hello world" is the classic way to start out any programming endeavour. 
 
 The full program can be found on GitHub at this book's game repo
 
-https://github.com/city41/neo-geo-dev-book-game/tree/04-hello-world
+https://github.com/city41/neo-geo-dev-book-game/tree/05-hello-world
 
 Each chapter in the book will get its own branch.
 
@@ -379,11 +379,11 @@ int main() {
 }
 ```
 
-You can find this code [here in the book's companion repo](https://github.com/city41/neo-geo-dev-book-game/blob/04-hello-world/src/main.c).
+You can find this code [here in the book's companion repo](https://github.com/city41/neo-geo-dev-book-game/blob/05-hello-world/src/main.c).
 
 ## Compiling and running our program
 
-Finally we can compile and run our program. Makes sure you are in the `src/` directory and invoke `make`. This will compile the C code and do all the other needed steps to build out an entire Neo Geo ROM of our program. If you get any errors, see what the error says and see if you can figure out what you did wrong. If you get stuck, you can use the [companion repo](https://github.com/city41/neo-geo-dev-book-game/blob/04-hello-world/src/main.c) as a reference.
+Finally we can compile and run our program. Makes sure you are in the `src/` directory and invoke `make`. This will compile the C code and do all the other needed steps to build out an entire Neo Geo ROM of our program. If you get any errors, see what the error says and see if you can figure out what you did wrong. If you get stuck, you can use the [companion repo](https://github.com/city41/neo-geo-dev-book-game/blob/05-hello-world/src/main.c) as a reference.
 
 Finally, invoke `make gngeo` to see your game running in the emulator.
 
