@@ -15,7 +15,7 @@ Every byte in memory is given an address, starting at zero and going up by one f
 
 The 32kb of memory your game can use starts at address 1,048,576, which is 0x100000 in hexidecimal. If you wanted to, you could write this in your game and it'd work perfectly fine
 
-```C
+```c
 *(u8*(0x100000)) = 12;
 ```
 
@@ -25,7 +25,7 @@ But out of the 16mb of address space, only about 0.4% of it is used for the work
 
 For example, the palette RAM is mapped into the 68k's memory map at addresses 0x400000 through 0x401fff. In our hello world program, when we initialized the palettes, we were sending bytes to these very addresses. To do this we used the constant `MMAP_PAL_BANK1` which is defined in ngdevkit. If you find its definition in ngdevkit's source code, you will see it's quite similar to the line of code above
 
-```C
+```c
 #define MMAP_PALBANK1	((volatile u16*)0x400000)
 ```
 

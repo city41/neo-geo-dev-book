@@ -23,7 +23,7 @@ Each chapter in the book will get its own branch.
 
 Create a directory named `helloNeo` and set up its contents like this
 
-```
+```bash
 resources/
 src/
 configure.ac
@@ -39,7 +39,7 @@ From this directory in a terminal, run the `autoreconf` command. This will take 
 
 We need a primary Makefile to drive building and running the game. We lean on ngdevkit to help us here. Create a file named `Makefile` in the `src` directory with this as its contents:
 
-```Makefile
+```bash
 all: cart nullbios
 
 include ../Makefile.config
@@ -197,7 +197,7 @@ This is a bit simplified because it is ignoring palettes, but we'll get there in
 
 We are now finally ready to write some actual code. Create the file `src/main.c` and start it out with this:
 
-```C
+```c
 #include <ngdevkit/neogeo.h>
 
 int main() {
@@ -214,7 +214,7 @@ We need to:
 
 That will look something like this
 
-```C
+```c
 #include <ngdevkit/neogeo.h>
 
 int main() {
@@ -231,7 +231,7 @@ Let's go ahead and start creating these functions.
 
 Palettes are stored in regular RAM, not video RAM. Palettes start at address 0x400000, which ngdevkit has named `MMAP_PALBANK1`. To initialize a palette, we just need to write some colors to this address
 
-```C
+```c
 #define BLACK 0x8000
 #define WHITE 0x7FFF
 #define PALETTE_SIZE 2
@@ -251,7 +251,7 @@ Here we have defined a two color palette and a function which will write it into
 
 By the time our game is running, the system has probably already used the fix layer for the eyecatcher. We need to erase everything in the fix layer, so our `fix_clear` does just that:
 
-```C
+```c
 void fix_clear() {
     u8 palette = 0;
     u16 tileValue = (palette << 12) | 0xFF;
@@ -292,7 +292,7 @@ The tile at 0xFF <i>should</i> be blank but nothing enforces that. If your S ROM
 
 And finally we need to implement the function that sets our message into the fix layer
 
-```C
+```c
 void fix_print(u16 x, u16 y, const u8* text) {
     *REG_VRAMADDR = ADDR_FIXMAP + (x * 32) + y;
     *REG_VRAMMOD = 32;
@@ -320,7 +320,7 @@ The while loop looks at each character in `text` one by one, and adds one to its
 
 At this point we have written the entire program. Except there is one more thing we need to do. After we have put our message on the fix layer, we have to keep our game running so that we can see the message. The 68k processor will not stop, it needs to keep running instruction as long as the console is turned on. So for this simple program, we end with an infinite loop to keep the processor busy. With that in mind, the final program is:
 
-```C
+```c
 #include <ngdevkit/neogeo.h>
 
 #define BLACK 0x8000
