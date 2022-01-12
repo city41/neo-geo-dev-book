@@ -239,9 +239,9 @@ Palettes are stored in regular RAM, not video RAM. Palettes start at address 0x4
 const u16 palette[PALETTE_SIZE] = { BLACK, WHITE };
 
 void init_palette() {
-    for (u8 i = 0; i < PALETTE_SIZE; ++i) {
-        MMAP_PALBANK1[i] = palette[i];
-    }
+  for (u8 i = 0; i < PALETTE_SIZE; ++i) {
+    MMAP_PALBANK1[i] = palette[i];
+  }
 }
 ```
 
@@ -253,15 +253,15 @@ By the time our game is running, the system has probably already used the fix la
 
 ```c
 void fix_clear() {
-    u8 palette = 0;
-    u16 tileValue = (palette << 12) | 0xFF;
+  u8 palette = 0;
+  u16 tileValue = (palette << 12) | 0xFF;
 
-    *REG_VRAMADDR = ADDR_FIXMAP;
-    *REG_VRAMMOD = 1;
+  *REG_VRAMADDR = ADDR_FIXMAP;
+  *REG_VRAMMOD = 1;
 
-    for (u16 i = 0; i < 40 * 32; ++i) {
-        *REG_VRAMRW = tileValue;
-    }
+  for (u16 i = 0; i < 40 * 32; ++i) {
+    *REG_VRAMRW = tileValue;
+  }
 }
 ```
 
@@ -294,17 +294,17 @@ And finally we need to implement the function that sets our message into the fix
 
 ```c
 void fix_print(u16 x, u16 y, const u8* text) {
-    *REG_VRAMADDR = ADDR_FIXMAP + (x * 32) + y;
-    *REG_VRAMMOD = 32;
+  *REG_VRAMADDR = ADDR_FIXMAP + (x * 32) + y;
+  *REG_VRAMMOD = 32;
 
-    u8 palette = 0;
+  u8 palette = 0;
 
-    while (*text) {
-        u16 tileIndex = *text + 1;
-        *REG_VRAMRW = (palette << 12) | tileIndex;
+  while (*text) {
+    u16 tileIndex = *text + 1;
+    *REG_VRAMRW = (palette << 12) | tileIndex;
 
-        text += 1;
-    }
+    text += 1;
+  }
 }
 ```
 
@@ -330,52 +330,52 @@ At this point we have written the entire program. Except there is one more thing
 const u16 palette[PALETTE_SIZE] = { BLACK, WHITE };
 
 void init_palette() {
-    for (u8 i = 0; i < PALETTE_SIZE; ++i) {
-        MMAP_PALBANK1[i] = palette[i];
-    }
+  for (u8 i = 0; i < PALETTE_SIZE; ++i) {
+    MMAP_PALBANK1[i] = palette[i];
+  }
 }
 
 void fix_clear() {
-    u8 palette = 0;
-    u16 tileValue = (palette << 12) | 0xFF;
+  u8 palette = 0;
+  u16 tileValue = (palette << 12) | 0xFF;
 
-    *REG_VRAMADDR = ADDR_FIXMAP;
-    *REG_VRAMMOD = 1;
+  *REG_VRAMADDR = ADDR_FIXMAP;
+  *REG_VRAMMOD = 1;
 
-    for (u16 i = 0; i < 40 * 32; ++i) {
-        *REG_VRAMRW = tileValue;
-    }
+  for (u16 i = 0; i < 40 * 32; ++i) {
+    *REG_VRAMRW = tileValue;
+  }
 }
 
 void fix_print(u16 x, u16 y, const u8* text) {
-    *REG_VRAMADDR = ADDR_FIXMAP + (x * 32) + y;
-    *REG_VRAMMOD = 32;
+  *REG_VRAMADDR = ADDR_FIXMAP + (x * 32) + y;
+  *REG_VRAMMOD = 32;
 
-    u8 palette = 0;
+  u8 palette = 0;
 
-    while (*text) {
-        // the S ROM used by this game has the tiles stored just one
-        // off from the ASCII encoding, so we add a one to get the
-        // tile index we need.
-        u16 tileIndex = *text + 1;
-        *REG_VRAMRW = (palette << 12) | tileIndex;
+  while (*text) {
+    // the S ROM used by this game has the tiles stored just one
+    // off from the ASCII encoding, so we add a one to get the
+    // tile index we need.
+    u16 tileIndex = *text + 1;
+    *REG_VRAMRW = (palette << 12) | tileIndex;
 
-        text += 1;
-    }
+    text += 1;
+  }
 }
 
 int main() {
-    init_palette();
-    fix_clear();
+  init_palette();
+  fix_clear();
 
-    fix_print(10, 14, "Hello Neo Geo!");
+  fix_print(10, 14, "Hello Neo Geo!");
 
-    // the infinite loop that allows our game to keep running
-    for (;;) { }
+  // the infinite loop that allows our game to keep running
+  for (;;) { }
 
-    // we never actually get to this return, but returning an int
-    // is expected for main() in most C environments
-    return 0;
+  // we never actually get to this return, but returning an int
+  // is expected for main() in most C environments
+  return 0;
 }
 ```
 

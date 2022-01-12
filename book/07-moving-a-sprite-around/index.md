@@ -84,8 +84,8 @@ The template file for the C code is a tad more complex. It uses `forEach()` to w
 
 const u16 palettes[NUM_PALETTE_ENTRIES] = {
 <% palettes.forEach(function(palette, i, a) { -%>
-    // palette <%= i %>
-    <%= palette.map(c => '0x' + c.toString(16)).join(', ') %><% if (i < a.length - 1) { %>,<%}%>
+  // palette <%= i %>
+  <%= palette.map(c => '0x' + c.toString(16)).join(', ') %><% if (i < a.length - 1) { %>,<%}%>
 <% }); -%>
 };
 ```
@@ -96,12 +96,12 @@ Resulting in this C file
 #include "paletteDefs.h"
 
 const u16 palettes[NUM_PALETTE_ENTRIES] = {
-    // palette 0
-    0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000,
-    // palette 1
-    0x5f0f, 0x7fff, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000,
-    // palette 2
-    0x5f0f, 0x3b, 0x1037, 0x5fff, 0x704f, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000
+  // palette 0
+  0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000,
+  // palette 1
+  0x5f0f, 0x7fff, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000,
+  // palette 2
+  0x5f0f, 0x3b, 0x1037, 0x5fff, 0x704f, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000
 };
 ```
 
@@ -131,9 +131,9 @@ Up near the top of `main.c` add `#include "paletteDefs.h"`, then `init_palettes`
 ...
 
 void init_palettes() {
-    for (u8 i = 0; i < NUM_PALETTE_ENTRIES; ++i) {
-        MMAP_PALBANK1[i] = palettes[i];
-    }
+  for (u8 i = 0; i < NUM_PALETTE_ENTRIES; ++i) {
+    MMAP_PALBANK1[i] = palettes[i];
+  }
 }
 ```
 
@@ -143,13 +143,13 @@ Let's define a simple `Paddle` type then create one instance of it to keep track
 
 ```c
 struct Paddle {
-    s16 x;
-    s16 y;
+  s16 x;
+  s16 y;
 };
 
 struct Paddle paddle = {
-    .x = 16,
-    .y = 200
+  .x = 16,
+  .y = 200
 };
 ```
 
@@ -161,26 +161,26 @@ Let's jump ahead a bit and take a look at `main()`
 
 ```c
 int main() {
-    init_palettes();
-    fix_clear();
+  init_palettes();
+  fix_clear();
 
-    fix_print(3, 4, "Use left and right to move paddle");
-    load_paddle();
+  fix_print(3, 4, "Use left and right to move paddle");
+  load_paddle();
 
-    for (;;) {
-        if (bios_p1current & CNT_LEFT) {
-            paddle.x -= 1;
-        }
-
-        if (bios_p1current & CNT_RIGHT) {
-            paddle.x += 1;
-        }
-
-        wait_vblank();
-        move_paddle();
+  for (;;) {
+    if (bios_p1current & CNT_LEFT) {
+        paddle.x -= 1;
     }
 
-    return 0;
+    if (bios_p1current & CNT_RIGHT) {
+        paddle.x += 1;
+    }
+
+    wait_vblank();
+    move_paddle();
+  }
+
+  return 0;
 }
 ```
 
@@ -209,13 +209,13 @@ ngdevkit is handling the vblank interrupt for us and providing us with a nice si
 volatile u8 vblank = 0;
 
 void rom_callback_VBlank() {
-    vblank = 1;
+  vblank = 1;
 }
 
 void wait_vblank() {
-    while (!vblank);
+  while (!vblank);
 
-    vblank = 0;
+  vblank = 0;
 }
 ```
 
@@ -375,25 +375,25 @@ When we set the new y value, we have to also set height again. That is because y
 
 ```c
 void move_sprite(u16 spriteIndex, s16 x, s16 y) {
-    // jump to SCB3 for y, then use mod to automatically jump to SCB4 for x
-    *REG_VRAMADDR = ADDR_SCB3 + spriteIndex;
-    *REG_VRAMMOD = SCB234_SIZE;
+  // jump to SCB3 for y, then use mod to automatically jump to SCB4 for x
+  *REG_VRAMADDR = ADDR_SCB3 + spriteIndex;
+  *REG_VRAMMOD = SCB234_SIZE;
 
-    // read the current y/sticky/height value and hold onto it
-    u16 scb3Value = *REG_VRAMRW;
+  // read the current y/sticky/height value and hold onto it
+  u16 scb3Value = *REG_VRAMRW;
 
-    // we want to strip out the y part of the value, as we
-    // will be changing to the new y
-    u8 heightAndSticky = sbc3Value & 0x7f;
+  // we want to strip out the y part of the value, as we
+  // will be changing to the new y
+  u8 heightAndSticky = sbc3Value & 0x7f;
 
-    *REG_VRAMADDR = ADDR_SCB3 + spriteIndex;
+  *REG_VRAMADDR = ADDR_SCB3 + spriteIndex;
 
-    // set the new y. we have only changed y's value,
-    // height and sticky are whatever they were before
-    *REG_VRAMRW = (TO_SCREEN_Y(newY) << 7) | heightAndSticky;
+  // set the new y. we have only changed y's value,
+  // height and sticky are whatever they were before
+  *REG_VRAMRW = (TO_SCREEN_Y(newY) << 7) | heightAndSticky;
 
-    // set new x
-    *REG_VRAMRW = TO_SCREEN_X(newX) << 7;
+  // set new x
+  *REG_VRAMRW = TO_SCREEN_X(newX) << 7;
 }
 ```
 

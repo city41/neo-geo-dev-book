@@ -32,6 +32,9 @@ module.exports = {
 							maxWidth: '100vw',
 							fontSize: '0.9em !important',
 						},
+						'pre, pre code, pre code span': {
+							tabSize: '2 !important',
+						},
 					},
 				},
 			}),
