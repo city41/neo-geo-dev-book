@@ -6,7 +6,7 @@ The book uses [ngdevkit](https://github.com/dciabrin/ngdevkit) as the core dev e
 
 ## Status
 
-I just started this very recently, so there's quite a long ways to go. You can see the current overall status per chapter here: https://neo-geo-dev-book.vercel.app/book
+I just started this very recently, so there's quite a long ways to go. You can see the current overall status per chapter here: https://neogeobook.mattgreer.dev/book
 
 ## Goals
 
