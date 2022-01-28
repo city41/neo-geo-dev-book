@@ -54,6 +54,12 @@ function ChapterPage({
 				className="prose lg:prose-xl"
 				dangerouslySetInnerHTML={{ __html: content }}
 			/>
+			<BookNavigation
+				className="my-16"
+				currentChapterNumber={currentChapterNumber}
+				totalChapterCount={totalChapterCount}
+				allSlugs={allSlugs}
+			/>
 		</div>
 	);
 }
