@@ -17,7 +17,11 @@ Most systems at the time displayed graphics on specific layers, with dedicated b
 
 The hardware can access 1,048,576 unique graphic tiles at once, which equates to 128 megabytes of graphic data. If needed, games could go even larger by bank switching different graphic sets in and out. For the time this was an absolutely astonishing amount of graphics data, in comparison Capcom's CPS 1 system can only handle up to 1.5 megabytes of graphic data[^3]. Neo Geo games were free to have many cut scenes, frames of animation, environments, the sky was practically the limit as far as graphical variety was concerned. As the developers became more familiar with the hardware, and as the size of games grew, the library of games really blossomed from relatively standard arcade game fair to truly epic masterpieces as the years went on.
 
-<< screenshots comparing Fatal Fury 1 and Garou >>
+<figure>
+    <img src="/ff1_vs_rbs.png" />
+    <figcaption>
+    Graphical comparison between Sound Beach in Fatal Fury (1991) and Real Bout Fatal Fury Special (1997)
+</figure>
 
 ## Why write this book
 

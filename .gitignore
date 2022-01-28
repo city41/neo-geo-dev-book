@@ -44,7 +44,6 @@ yarn-error.log*
 /brute/results*
 /brute/*.sav
 /brute/*.json
-/pngsForResources
 
 # binary files
 /binaryLevels
@@ -54,9 +53,3 @@ tsconfig.tsbuildinfo
 # nextjs stuff
 .next
 
-# images that get copied into public
-public/*.png
-public/*.svg
-public/*.gif
-public/*.jpg
-public/*.jpeg
