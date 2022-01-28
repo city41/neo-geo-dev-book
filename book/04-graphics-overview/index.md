@@ -5,7 +5,7 @@ status: rough-draft
 version: 0.0.1
 ---
 
-In the 80s and 90s, memory, integrated circuits and other components of game hardware was quite expensive. This expense forced hardware designers to make do with less, and they got creative with how they enabled games to display graphics on the screen.
+In the 80s and 90s, memory, integrated circuits and other components of game hardware were quite expensive. This expense forced hardware designers to make do with less, and they got creative with how they enabled games to display graphics on the screen.
 
 Graphics were almost always defined using tiles, which were typically 8x8 or 16x16 chunks of graphics. A scene on the screen was built up using these tiles rather than specifying each and every pixel. If a game console has a screen resolution of 320x224 and each pixel's color can be chosen using a 16 bit color space, the system would need at least 140 kilobytes of video RAM to store a screen
 
@@ -55,7 +55,11 @@ A sprite on the Neo Geo is a single column of tiles. Sprites can be up to 32 til
 
 A sprite can be scaled horizontally and vertically, and each individual tile specifies its palette and whether it is flipped horizontally or vertically. The graphics hardware even offers simple "auto animations" with sprite tiles where a sequence of tiles will be displayed one at a time, forming a simple animation. Whenever you see people in the backgrounds of Neo Geo fighters doing the same small movement over and over, almost certainly tile auto animations were used
 
-<< gif of real bout fatal fury background with auto animations >>
+<figure>
+    <img src="/rbff_eastSidePark.gif">
+    <figcaption>Auto animations providing some flavor for the East Side Park background in Real Bout Fatal Fury
+    </figcaption>
+</figure>
 
 ### Tile storage
 
@@ -65,7 +69,11 @@ The tiles for sprites are stored in the C ROMs. Sometimes a Neo Geo tile is call
 
 Zero always means transparent, even if the tile will be used for a background. Neo Geo games can store an immense quantity of tiles, maxing out at 1,048,576. This equates to 128 megabytes of graphic data! So even though graphics are built out of tiles, in many games so many different tiles are used at once, the resulting screen looks like a fully hand crafted scene rather than having that "repeated tile look".
 
-<< screenshots of metal slug and last blade >>
+<figure>
+    <img src="/lastBlade_vs_smb3Allstars.gif" />
+    <figcaption>Last Blade 2 for the Neo Geo on the left, versus Super Mario Bros 3 on the Game Boy Advance. Both images are constructed from tiles. But since Mario uses vastly fewer tiles overall, the scene's tile origins are obvious. Last Blade on the other hand has so many unique tiles, you can't tell the image was created with tiles at all.
+    </figcaption>
+</figure>
 
 ## Sprites and VRAM
 
@@ -91,10 +99,10 @@ It's not entirely true that all Neo Geo graphics are done with sprites. There is
 
 << diagram of the fix layer >>
 
-The fix layer is almost always used for the "heads up display" in games. Things like life bars, credit counters, timers, etc, are usually found on the fix layer. It's convenient and simple to use, so it is ideal for these kinds of simple visuals. It's also useful for screen transition effects, such as this one found in Metal Slug
+The fix layer is almost always used for the "heads up display" in games. Things like life bars, credit counters, timers, etc, are usually found on the fix layer. It's convenient and simple to use, so it is ideal for these kinds of simple visuals. It's also useful for screen transition effects, such as this one found in ???
 
-<< gif of MS screen transition >>
+<< gif of screen transition >>
 
 The fix layer's tile map is located in VRAM. To set a tile on the layer, find its location in memory and write the palette and tile index. Just like sprites, this should ideally be done during vblank. We will look at precisely how to do this in the next chapter.
 
-[^1] There is also 8kb of palette data stored in the 68k's main memory, so you could say the Neo Geo needs 76kb of memory to handle graphics
+[^1]: There is also 8kb of palette data stored in the 68k's main memory, so you could say the Neo Geo needs 76kb of memory to handle graphics
