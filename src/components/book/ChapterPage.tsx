@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { BookNavigation } from './BookNavigation';
 import { ChapterStatus } from './ChapterStatus';
 
@@ -8,6 +9,19 @@ type ChapterPageProps = {
 	allSlugs: string[];
 	content: string;
 };
+
+function Warning({ className }: { className?: string }) {
+	return (
+		<div
+			className={clsx(className, 'bg-red-200 text-red-900 p-4 -mx-4 w-full')}
+		>
+			<div className="text-2xl font-bold">Warning!</div>
+			This book is in a very early stage. I don&apos;t recommend reading it with
+			the intention of learning Neo Geo development just yet. You will likely
+			hit pitfalls and mistakes.
+		</div>
+	);
+}
 
 function ChapterPage({
 	meta,
@@ -35,6 +49,7 @@ function ChapterPage({
 				status={meta.status}
 				version={meta.version}
 			/>
+			<Warning className="mb-8" />
 			<div
 				className="prose lg:prose-xl"
 				dangerouslySetInnerHTML={{ __html: content }}
