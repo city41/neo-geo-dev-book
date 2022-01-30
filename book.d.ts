@@ -1,6 +1,6 @@
 type ChapterStatus =
+	| 'planned'
 	| 'stub'
-	| 'brainstorming'
 	| 'rough-draft'
 	| 'alpha'
 	| 'beta'

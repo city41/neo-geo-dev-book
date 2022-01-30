@@ -9,7 +9,7 @@ function StatusBadge({ className, status }: StatusBadgeProps) {
 	return (
 		<div
 			className={clsx(className, 'px-2 py-1 text-white font-bold', {
-				'bg-red-500': status === 'brainstorming',
+				'bg-red-500': status === 'planned',
 				'bg-yellow-900': status === 'stub',
 				'bg-yellow-700': status === 'rough-draft',
 				'bg-green-600': status === 'alpha',
