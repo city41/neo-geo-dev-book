@@ -1,5 +1,5 @@
 ---
-chapterNumber: 9
+chapterNumber: 10
 title: Hitting Bricks
 status: planned
 version: 0.0.0
