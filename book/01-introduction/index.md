@@ -31,11 +31,19 @@ I also wanted a cohesive guide that takes the reader from no knowledge of Neo Ge
 
 At first, programming the Neo Geo seems pretty simple. But the hardware has many caveats and odd cases, which can be quite surprising at times. A primary goal of this book is to shed light on these oddities and show how to work with them when writing a game.
 
-## Who is this book for
+## Who is this book for?
 
 I am assuming the reader has experience coding in C and using Make. You don't need embedded experience or experience with other retro consoles, having experience coding C in a modern PC environment is perfectly fine. You should be comfortable with pointers, arrays, the preprocessor, etc. If you are brand new to programming this book is not a good starting point. If you have experience programming in other languages but haven't done much C, I recommend brushing up with a quick crash course on the language first. You do not need any previous assembly experience.
 
 << link to a good C crash course >>
+
+Some of the tools this book uses are written in JavaScript (actually, TypeScript) and run in Node. It is assumed the reader has some basic understanding of how to use NodeJS, but in depth knowledge is not necessary.
+
+## What is this book's scope?
+
+The main focus of this book is creating cartridge based Neo Geo games for the AES. The game that this book builds is a simple breakout clone. Some of the minor intricacies of the MVS (such as inserting coins and the attract mode) will be touched upon but not necessarily in detail.
+
+The CD system is completely out of scope for this book. Hopefully one day I'll touch upon how to port a game from cartridge to CD, but that is a long ways off.
 
 ## Who am I?
 
