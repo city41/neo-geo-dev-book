@@ -1,5 +1,5 @@
 ---
-chapterNumber: appendix-4
+chapterNumber: supplemental-4
 title: Entity and Sprite Pools
 status: stub
 version: 0.0.0

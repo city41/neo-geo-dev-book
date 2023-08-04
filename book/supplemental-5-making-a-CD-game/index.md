@@ -1,5 +1,5 @@
 ---
-chapterNumber: appendix-5
+chapterNumber: supplemental-5
 title: Making a CD Game
 status: planned
 version: 0.0.0

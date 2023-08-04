@@ -1,5 +1,5 @@
 ---
-chapterNumber: appendix-2
+chapterNumber: supplemental-2
 title: Fixed Point Numbers
 status: stub
 version: 0.0.0

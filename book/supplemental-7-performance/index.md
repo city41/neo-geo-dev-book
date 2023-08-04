@@ -1,5 +1,5 @@
 ---
-chapterNumber: appendix-7
+chapterNumber: supplemental-7
 title: Performance
 status: planned
 version: 0.0.0

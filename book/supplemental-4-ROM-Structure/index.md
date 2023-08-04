@@ -1,5 +1,5 @@
 ---
-chapterNumber: appendix-4
+chapterNumber: supplemental-4
 title: ROM Structure
 status: planned
 version: 0.0.0

@@ -1,5 +1,5 @@
 ---
-chapterNumber: appendix-8
+chapterNumber: supplemental-8
 title: Scaling Sprites
 status: planned
 version: 0.0.0

@@ -1,15 +1,15 @@
 ---
-chapterNumber: appendix-3
+chapterNumber: supplemental-3
 title: Camp Fire
 status: rough-draft
 version: 0.0.1
 ---
 
-This appendix walks through loading a more complex auto animation using sromcrom.
+This supplemental walks through loading a more complex auto animation using sromcrom.
 
 ![campfire screenshot](./campFireScreenshot.png)
 
-The key here is taking advantage of sromcrom to generate code that allows us to load the camp fire's tiles without having to work out their locations in the C ROM. The [companion repo](https://github.com/city41/neo-geo-dev-book-game/tree/appendix-3-camp-fire/)
+The key here is taking advantage of sromcrom to generate code that allows us to load the camp fire's tiles without having to work out their locations in the C ROM. The [companion repo](https://github.com/city41/neo-geo-dev-book-game/tree/supplemental-3-camp-fire/)
 
 ## Specifying the camp fire in resources.json
 

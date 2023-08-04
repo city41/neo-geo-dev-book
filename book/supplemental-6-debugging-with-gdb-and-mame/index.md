@@ -1,5 +1,5 @@
 ---
-chapterNumber: appendix-6
+chapterNumber: supplemental-6
 title: Debugging with GDB and MAME
 status: planned
 version: 0.0.0

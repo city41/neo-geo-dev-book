@@ -67,7 +67,7 @@ Each frame of the campfire's animation is 2 tiles wide and 4 tall. Each specific
 
 ![camp fire in sprite viewer](./campFireInSpriteViewer.png)
 
-If you'd like to see how to load this camp fire into a game using sromcrom code generation, checkout appendix 3.
+If you'd like to see how to load this camp fire into a game using sromcrom code generation, checkout supplemental 3.
 
 ### Loading the ball into our game
 
