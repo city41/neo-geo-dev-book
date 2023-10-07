@@ -31,16 +31,18 @@ In `resources.json`, lets tell sromcrom about our palette templates
 {
 	"romPathRoot": "../src/rom/202-",
 	"palettes": {
-		"codeEmit": [
-			{
-				"template": "../src/sromcromTemplates/paletteDefs.h.hbr",
-				"dest": "../src/paletteDefs.h"
-			},
-			{
-				"template": "../src/sromcromTemplates/paletteDefs.c.hbr",
-				"dest": "../src/paletteDefs.c"
-			}
-		]
+		"codeEmit": {
+      "inputs": [
+        {
+          "template": "../src/sromcromTemplates/paletteDefs.h.hbr",
+          "dest": "../src/paletteDefs.h"
+        },
+        {
+          "template": "../src/sromcromTemplates/paletteDefs.c.hbr",
+          "dest": "../src/paletteDefs.c"
+        }
+      ]
+    }
 	},
 	"sromImages": {
 		"inputs": [
@@ -87,8 +89,9 @@ const u16 palettes[NUM_PALETTE_ENTRIES] = {
   // palette {{@index}}
   {{#each palette as |num|}}
   0x{{hex num}}{{#unless @last}},{{/unless}}
-{{/each}}
+  {{/each}}
 {{#unless @last}},{{/unless}}
+{{/each}}
 };
 ```
 

@@ -266,16 +266,18 @@ We need to move our ball image from `cromImages` in resources.json to `cromAnima
 
 ```json
 "cromAnimations": {
-		"codeEmit": [
-				{
-						"template": "../src/sromcromTemplates/cromAnimationDefs.h.hbr",
-						"dest": "../src/cromAnimationDefs.h"
-				},
-				{
-						"template": "../src/sromcromTemplates/cromAnimationDefs.c.hbr",
-						"dest": "../src/cromAnimationDefs.c"
-				}
-		],
+		"codeEmit": {
+            "inputs": [
+                    {
+                            "template": "../src/sromcromTemplates/cromAnimationDefs.h.hbr",
+                            "dest": "../src/cromAnimationDefs.h"
+                    },
+                    {
+                            "template": "../src/sromcromTemplates/cromAnimationDefs.c.hbr",
+                            "dest": "../src/cromAnimationDefs.c"
+                    }
+            ]
+        },
 		"inputs": [
 			{
 				"name": "ball",

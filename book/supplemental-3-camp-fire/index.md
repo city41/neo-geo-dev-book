@@ -17,16 +17,18 @@ In our `resources.json` file, let's add the camp fire as a cromImage
 
 ```json
 	"cromImages": {
-		"codeEmit": [
-				{
-						"template": "../src/sromcromTemplates/cromImageDefs.h.hbr",
-						"dest": "../src/cromImageDefs.h"
-				},
-				{
-						"template": "../src/sromcromTemplates/cromImageDefs.c.hbr",
-						"dest": "../src/cromImageDefs.c"
-				}
-		],
+		"codeEmit": {
+            "inputs": [
+                    {
+                            "template": "../src/sromcromTemplates/cromImageDefs.h.hbr",
+                            "dest": "../src/cromImageDefs.h"
+                    },
+                    {
+                            "template": "../src/sromcromTemplates/cromImageDefs.c.hbr",
+                            "dest": "../src/cromImageDefs.c"
+                    }
+            ]
+        },
 		"inputs": [
 			{
 				"name": "campFire",
