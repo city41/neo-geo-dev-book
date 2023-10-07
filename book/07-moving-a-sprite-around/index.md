@@ -33,11 +33,11 @@ In `resources.json`, lets tell sromcrom about our palette templates
 	"palettes": {
 		"codeEmit": [
 			{
-				"template": "../src/sromcromTemplates/paletteDefs.h.ejs",
+				"template": "../src/sromcromTemplates/paletteDefs.h.hbr",
 				"dest": "../src/paletteDefs.h"
 			},
 			{
-				"template": "../src/sromcromTemplates/paletteDefs.c.ejs",
+				"template": "../src/sromcromTemplates/paletteDefs.c.hbr",
 				"dest": "../src/paletteDefs.c"
 			}
 		]
@@ -55,17 +55,17 @@ In `resources.json`, lets tell sromcrom about our palette templates
 
 Here we are telling sromcrom to use our templates to generate `paletteDefs.h` and `paletteDefs.c`. Our templates will get passed the palette data that sromcrom generated, and we use this data to write out the palette code. The header file template is quite simple
 
-```ejs
+```c
 #pragma once
 #include <ngdevkit/neogeo.h>
 
-#define NUM_PALETTES <%= palettes.length %>
-#define NUM_PALETTE_ENTRIES <%= palettes.flat(1).length %>
+#define NUM_PALETTES {{count palettes}}
+#define NUM_PALETTE_ENTRIES {{count palettes flatten=true}}
 
 const u16 palettes[NUM_PALETTE_ENTRIES];
 ```
 
-As you can see it is almost a normal header file. But everytime there is a `<%` `%>` pair, the template switches to JavaScript code. In the JavaScript environment, we have a `palettes` array, containing the data for our palettes. Using this we can generate our header file, which ends up looking like this
+As you can see it is almost a normal header file. But everytime there is a `{{` `}}` pair, the template pulls in dynamic data. These are [Handlebars](https://handlebarsjs.com/) templates. In the Handlebars environment, we have a `palettes` two dimensional array, containing the data for our palettes. Using this we can generate our header file, which ends up looking like this
 
 ```c
 #pragma once
@@ -77,35 +77,44 @@ As you can see it is almost a normal header file. But everytime there is a `<%` 
 const u16 palettes[NUM_PALETTE_ENTRIES];
 ```
 
-The template file for the C code is a tad more complex. It uses `forEach()` to write all of the palette values into the C file
+The template file for the C code is a tad more complex. It uses `{{#each palettes}}` to write all of the palette values into the C file
 
-```ejs
+```c
 #include "paletteDefs.h"
 
 const u16 palettes[NUM_PALETTE_ENTRIES] = {
-<% palettes.forEach(function(palette, i, a) { -%>
-  // palette <%= i %>
-  <%= palette.map(c => '0x' + c.toString(16)).join(', ') %><% if (i < a.length - 1) { %>,<%}%>
-<% }); -%>
+{{#each palettes as |palette|}}
+  // palette {{@index}}
+  {{#each palette as |num|}}
+  0x{{hex num}}{{#unless @last}},{{/unless}}
+{{/each}}
+{{#unless @last}},{{/unless}}
 };
 ```
 
-Resulting in this C file
+Resulting in this C file (truncated to save space)
 
 ```c
 #include "paletteDefs.h"
 
 const u16 palettes[NUM_PALETTE_ENTRIES] = {
   // palette 0
-  0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000,
+  0x8000,
+  0x8000,
+  0x8000, 
+  ...
   // palette 1
-  0x5f0f, 0x7fff, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000,
+  0x5f0f,
+  0x7fff,
+  0x8000,
+  ...
   // palette 2
-  0x5f0f, 0x3b, 0x1037, 0x5fff, 0x704f, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000
+  0x5f0f,
+  0x3b,
+  0x1037,
+  ...
 };
 ```
-
-The templating language being used is [Embedded JavaScript](https://ejs.co/).
 
 Now that we have our palette code all squared away, let's add `paletteDefs` as an object in our Makefile, so we compile this new code into our game. In the Makefile, change the line near the top which reads `OBJS=main` to this
 

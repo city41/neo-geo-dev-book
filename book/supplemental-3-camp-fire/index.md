@@ -19,11 +19,11 @@ In our `resources.json` file, let's add the camp fire as a cromImage
 	"cromImages": {
 		"codeEmit": [
 				{
-						"template": "../src/sromcromTemplates/cromImageDefs.h.ejs",
+						"template": "../src/sromcromTemplates/cromImageDefs.h.hbr",
 						"dest": "../src/cromImageDefs.h"
 				},
 				{
-						"template": "../src/sromcromTemplates/cromImageDefs.c.ejs",
+						"template": "../src/sromcromTemplates/cromImageDefs.c.hbr",
 						"dest": "../src/cromImageDefs.c"
 				}
 		],
@@ -44,13 +44,13 @@ Notice that the camp fire has `tileWidth` set to 2. This allows sromcrom to figu
 
 We are also specifying some new codeEmit templates. Sromcrom will call these templates with all of the information we need to write out data that will let us load our camp fire. Let's start with the header template
 
-```ejs
+```c
 #pragma once
 #include "tileImage.h"
 
-<% images.forEach(function(image) { -%>
-const struct TileImageDef <%= image.name %>_cromImageDef;
-<% }); -%>
+{{#each images}}
+const struct TileImageDef {{image.name}}_cromImageDef;
+{{/each}}
 ```
 
 Sromcrom passed us an `image` array, each image containing all of the information for a given cromImage. In the header we just declare the `TileImageDef` struct instances for each image, and `TileImageDef` is defined in `tileImage.h`
@@ -76,26 +76,25 @@ struct TileImageDef
 
 Finally, the c template emits our actual code
 
-```ejs
+```c
 #include "cromImageDefs.h"
 
-<% images.forEach(function(image, i) { -%>
-const struct TileDef <%= image.name %>_tileDefs[<%= image.tiles.flat(1).length %>] = {
-<% image.tiles.flat(1).forEach(function(tile, i, a) { -%>
+{{#each images}}
+const struct TileDef {{name}}_tileDefs[{{count tiles flatten=true}}] = {
+    {{#each (flat tiles)}}
     {
-        .index = <%= tile.index %>,
-        .palette = <%= tile.paletteIndex %>,
-        .autoAnimation = <%= image.autoAnimation || 0 %>
-    }<% if (i < a.length - 1) { %>,
-<% } -%>
-<% }); %>
+        .index = {{index}}
+        .palette = {{paletteIndex}},
+        .autoAnimation = {{default autoAnimation 0}},
+    }{{#unless @last}},{{/unless}}
+    {{/each}}
 };
-const struct TileImageDef <%= image.name %>_cromImageDef = {
-    .tiles = <%= image.name %>_tileDefs,
-    .width = <%= image.tiles[0].length %>,
-    .height = <%= image.tiles.length %>,
+const struct TileImageDef {{name}}_cromImageDef = {
+    .tiles = {{name}}_tileDefs,
+    .width = {{count tiles.[0]}},
+    .height = {{count tiles}}
 };
-<% }); %>
+{{/each}}
 ```
 
 This is a more complex template. Each image has an array of tile definitions. These get emitted first, then after the image's struct is emitted. The final resulting will look like this

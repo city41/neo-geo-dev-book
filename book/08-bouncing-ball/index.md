@@ -268,11 +268,11 @@ We need to move our ball image from `cromImages` in resources.json to `cromAnima
 "cromAnimations": {
 		"codeEmit": [
 				{
-						"template": "../src/sromcromTemplates/cromAnimationDefs.h.ejs",
+						"template": "../src/sromcromTemplates/cromAnimationDefs.h.hbr",
 						"dest": "../src/cromAnimationDefs.h"
 				},
 				{
-						"template": "../src/sromcromTemplates/cromAnimationDefs.c.ejs",
+						"template": "../src/sromcromTemplates/cromAnimationDefs.c.hbr",
 						"dest": "../src/cromAnimationDefs.c"
 				}
 		],
@@ -306,24 +306,22 @@ Sromcrom can decide to put the tiles just about anywhere, in a real game you sho
 
 ### The code emit templates
 
-We need to write out some C code to be able to know where to find the tiles in our code. Let's start with the easier one, `cromAnimationDefs.h.ejs`, which just creates the header file
+We need to write out some C code to be able to know where to find the tiles in our code. Let's start with the easier one, `cromAnimationDefs.h.hbr`, which just creates the header file
 
-```ejs
+```c
 #pragma once
 #include "animationDef.h"
 
-<% animationGroups.forEach(function(animationGroup) { -%>
+{{#each animationGroups}}
 
-// start <%= animationGroup.name %>
+// start {{name}}
 
-<% animationGroup.animations.forEach(function(animation) { -%>
-const struct AnimationDef animationDef_<%= animationGroup.name %>_<%= animation.name %>;
+    {{#each animations}}
+const struct AnimationDef animationDef_{{../name}}_{{name}};
+    {{/each}}
 
-<% }); -%>
-
-// end <%= animationGroup.name %>
-
-<% }); -%
+// end {{name}}
+{{/each}}
 ```
 
 sromcrom places an `animationGroups` array in our template, that contains all of the info we need for our animations. Here we just emit one `AnimationDef` per animation. In this simple case, the resulting file looks like this
@@ -359,34 +357,34 @@ struct AnimationDef {
 };
 ```
 
-An animation is made up of frames, so we define a frame definition struct too. This will make more sense after we see how `cromAnimationDefs.c.ejs` plays out, which looks like this
+An animation is made up of frames, so we define a frame definition struct too. This will make more sense after we see how `cromAnimationDefs.c.hbr` plays out, which looks like this
 
-```ejs
+```c
 #include "cromAnimationDefs.h"
 
-<% animationGroups.forEach(function(animationGroup) { -%>
-// start <%= animationGroup.name %>
+{{#each animationGroups}}
+// start {{name}}
 
-<% animationGroup.animations.forEach(function(animation) { -%>
-const struct FrameDef frameDefs_<%= animationGroup.name %>_<%= animation.name %>[<%= animation.frames.length %>] = {
-<% animation.frames.forEach(function(frame, i, a) { -%>
+    {{#each animations}}
+const struct FrameDef frameDefs_{{../name}}_{{name}}[{{count frames}}] = {
+        {{#each frames as |frame|}}
     {
-        .tileIndex = <%= frame[0][0].index %>,
-        .paletteIndex = <%= frame[0][0].paletteIndex %>
-    }<% if (i < a.length - 1) { %>,<% } %>
-<% }); -%>
+        .tileIndex = {{frame.[0].[0].index}},
+        .paletteIndex = {{frame.[0].[0].paletteIndex}},
+    }{{#unless @last}},{{/unless}}
+        {{/each}}
 };
 
-const struct AnimationDef animationDef_<%= animationGroup.name %>_<%= animation.name %> = {
-    .frames = frameDefs_<%= animationGroup.name %>_<%= animation.name %>,
-    .frameCount = <%= animation.frames.length %>,
-    .frameDuration = <%= animation.custom.frameDuration %>
+const struct AnimationDef animationDef_{{../name}}_{{name}} = {
+    .frames = frameDefs_{{../name}}_{{name}},
+    .frameCount = {{count frames}}, 
+    .frameDuration = {{default custom.frameDuration 0}}
 };
 
-<% }); -%>
+    {{/each}}
 
-// end <%= animationGroup.name %>
-<% }); -%>
+// end {{name}}
+{{/each}}
 ```
 
 This is by far the most complicated template we've seen yet. But basically all that is happening is for each animation, we emit its frame definitions, then its animation definition. For our current app, the resulting cromAnimationDefs.c file looks like this
