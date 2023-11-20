@@ -3,3 +3,7 @@
 @tailwind utilities;
 
 @import 'prismjs/themes/prism-tomorrow.css';
+
+.callout {
+    @apply bg-green-200 p-2 text-green-900 text-base
+}

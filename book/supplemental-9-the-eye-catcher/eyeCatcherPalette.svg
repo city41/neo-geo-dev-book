@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg width="455.08mm" height="75.847mm" version="1.1" viewBox="0 0 455.08 75.847" xmlns="http://www.w3.org/2000/svg">
+ <g transform="translate(88.216 -60.712)">
+  <g fill-rule="evenodd" stroke-width=".26458">
+   <rect x="-88.216" y="60.712" width="75.847" height="75.847" fill="#fff"/>
+   <rect x="-12.369" y="60.712" width="75.847" height="75.847" fill="#f7f7f7"/>
+   <rect x="63.478" y="60.712" width="75.847" height="75.847" fill="#d0d0d0"/>
+  </g>
+  <g transform="translate(.14364 .14365)" fill="#d0d0d0" fill-rule="evenodd" stroke-width=".04393">
+   <rect x="-88.216" y="60.712" width="12.593" height="12.593"/>
+   <rect x="-63.03" y="60.712" width="12.593" height="12.593"/>
+   <rect x="-50.436" y="73.306" width="12.593" height="12.593"/>
+   <rect x="-37.843" y="60.712" width="12.593" height="12.593"/>
+   <rect x="-25.25" y="73.306" width="12.593" height="12.593"/>
+   <rect x="-37.843" y="85.899" width="12.593" height="12.593"/>
+   <rect x="-88.216" y="85.899" width="12.593" height="12.593"/>
+   <rect x="-75.623" y="98.492" width="12.593" height="12.593"/>
+   <rect x="-63.03" y="111.09" width="12.593" height="12.593"/>
+   <rect x="-50.436" y="123.68" width="12.593" height="12.593"/>
+   <rect x="-25.25" y="98.492" width="12.593" height="12.593"/>
+   <rect x="-75.623" y="123.68" width="12.593" height="12.593"/>
+   <rect x="-88.216" y="111.09" width="12.593" height="12.593"/>
+   <rect x="-75.623" y="73.306" width="12.593" height="12.593"/>
+   <rect x="-63.03" y="85.899" width="12.593" height="12.593"/>
+   <rect x="-50.436" y="98.492" width="12.593" height="12.593"/>
+   <rect x="-37.843" y="111.09" width="12.593" height="12.593"/>
+   <rect x="-25.25" y="123.68" width="12.593" height="12.593"/>
+  </g>
+  <g fill-rule="evenodd" stroke-width=".26458">
+   <rect x="139.33" y="60.712" width="75.847" height="75.847" fill="#a0a0a0"/>
+   <rect x="215.17" y="60.712" width="75.847" height="75.847" fill="#585858"/>
+   <rect x="291.02" y="60.712" width="75.847" height="75.847" fill="#0068e8"/>
+  </g>
+  <g fill="#000000" font-family="sans-serif" font-size="10.583px" stroke-width=".26458">
+   <text x="-67.214012" y="101.87878" style="line-height:1.25" xml:space="preserve"><tspan x="-67.214012" y="101.87878" stroke-width=".26458">$0000</tspan></text>
+   <text x="12.77267" y="101.87879" style="line-height:1.25" xml:space="preserve"><tspan x="12.77267" y="101.87879" stroke-width=".26458">$0fff</tspan></text>
+   <text x="84.633255" y="101.8788" style="line-height:1.25" xml:space="preserve"><tspan x="84.633255" y="101.8788" stroke-width=".26458">$0ddd</tspan></text>
+   <text x="160.82948" y="101.8788" style="line-height:1.25" xml:space="preserve"><tspan x="160.82948" y="101.8788" stroke-width=".26458">$0aaa</tspan></text>
+  </g>
+  <text x="236.28674" y="101.8788" fill="#fefefe" font-family="sans-serif" font-size="10.583px" stroke-width=".26458" style="line-height:1.25" xml:space="preserve"><tspan x="236.28674" y="101.8788" fill="#fefefe" stroke-width=".26458">$7555</tspan></text>
+  <text x="312.06439" y="101.8788" fill="#fefefe" font-family="sans-serif" font-size="10.583px" stroke-width=".26458" style="line-height:1.25" xml:space="preserve"><tspan x="312.06439" y="101.8788" fill="#fefefe" stroke-width=".26458">$306e</tspan></text>
+ </g>
+</svg>
