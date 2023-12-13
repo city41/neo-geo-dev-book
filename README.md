@@ -12,6 +12,14 @@ I just started this very recently, so there's quite a long ways to go. You can s
 
 I know I haven't worked on this in ages, real life got in the way. But I am determined to fully finish this book, it's important to me. Thanks for your patience.
 
+Dec 2023 update: I am now doing a lot of Neo Geo dev...
+
+- Making a full fledged game
+- [A Neo Geo dev video series on YouTube](https://www.youtube.com/watch?v=WTe4LaENZgE&list=PLHpd9DwlchgPu2K79NnMZThUABkm1zSpy)
+- Writing this book.
+
+But full disclosure, of the three, the book is the lowest priority. I will slowly, but surely, work on it.
+
 ## Goals
 
 - Walk through building an entire simple breakout game from start to finish.
